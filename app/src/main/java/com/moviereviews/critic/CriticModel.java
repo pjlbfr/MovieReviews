@@ -3,7 +3,7 @@ package com.moviereviews.models;
 import android.content.Context;
 import android.widget.Toast;
 
-import com.moviereviews.AppplicationMR;
+import com.moviereviews.ApplicationMR;
 import com.moviereviews.R;
 import com.moviereviews.critic.CriticContract;
 import com.moviereviews.objectresponse.Reviews;
@@ -28,7 +28,7 @@ public class CriticModel {
     }
 
     public void getReviews(String name) {
-        AppplicationMR.getApi().getSearchCriticReviews(name, offset).enqueue(new Callback<Reviews>() {
+        ApplicationMR.getApi().getSearchCriticReviews(name, offset).enqueue(new Callback<Reviews>() {
             @Override
             public void onResponse(Call<Reviews> call, Response<Reviews> response) {
                 if (response.body() != null){

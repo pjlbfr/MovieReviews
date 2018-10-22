@@ -3,7 +3,7 @@ package com.moviereviews.models;
 import android.content.Context;
 import android.widget.Toast;
 
-import com.moviereviews.AppplicationMR;
+import com.moviereviews.ApplicationMR;
 import com.moviereviews.R;
 import com.moviereviews.objectresponse.Reviews;
 import com.moviereviews.reviewes.ReviewsContract;
@@ -30,7 +30,7 @@ public class Model {
     }
 
     public void getReviews(){
-        AppplicationMR.getApi().getReviews(page).enqueue(new Callback<Reviews>() {
+        ApplicationMR.getApi().getReviews(page).enqueue(new Callback<Reviews>() {
             @Override
             public void onResponse(Call<Reviews> call, Response<Reviews> response) {
                 if (response.body() != null) {
@@ -47,7 +47,7 @@ public class Model {
     }
 
     public void getSearchByTitle(String title){
-        AppplicationMR.getApi().getSearchTitleReview(title).enqueue(new Callback<Reviews>() {
+        ApplicationMR.getApi().getSearchTitleReview(title).enqueue(new Callback<Reviews>() {
             @Override
             public void onResponse(Call<Reviews> call, Response<Reviews> response) {
                     if (response.body() != null) {
@@ -64,7 +64,7 @@ public class Model {
     }
 
     public void getSearchByPublicationDate(String date){
-        AppplicationMR.getApi().getSearchPublicationDateReview(date).enqueue(new Callback<Reviews>() {
+        ApplicationMR.getApi().getSearchPublicationDateReview(date).enqueue(new Callback<Reviews>() {
             @Override
             public void onResponse(Call<Reviews> call, Response<Reviews> response) {
                 if (response.body() != null) {
