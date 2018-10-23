@@ -3,19 +3,16 @@ package com.moviereviews.critic;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.moviereviews.models.CriticModel;
 import com.moviereviews.objectresponse.Review;
 
 import java.util.List;
 
 public class CriticPresenter implements CriticContract.Presenter{
 
-    private Context context;
     private CriticContract.View view;
     private CriticModel model;
 
     public CriticPresenter(Context context, @NonNull CriticContract.View view) {
-        this.context = context;
         this.view = view;
         model = new CriticModel(context, this);
         view.setPresenter(this);

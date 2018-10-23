@@ -12,14 +12,13 @@
         android:layout_height="wrap_content"
         >
 
-
         <android.support.v7.widget.CardView
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
             android:layout_marginTop="5dp"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
-            android:id="@+id/card_view_critic">
+            android:id="@+id/card_critic">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -61,7 +60,7 @@
                         >
 
                         <TextView
-                            android:id="@+id/text_view_display_name_critic"
+                            android:id="@+id/text_display_name_critic"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_weight="0.2"
@@ -72,7 +71,7 @@
                             />
 
                         <TextView
-                            android:id="@+id/text_view_status_critic"
+                            android:id="@+id/text_status_critic"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_marginBottom="10dp"
@@ -81,7 +80,7 @@
                             android:layout_weight="0.8"
                             android:textSize="16sp"
                             android:textColor="@color/colorWhite"
-                            android:background="@drawable/background_status"
+                            android:background="@drawable/tv_background_status"
                             />
 
                     </LinearLayout>
@@ -89,7 +88,7 @@
                 </LinearLayout>
 
                 <TextView
-                    android:id="@+id/text_view_bio_critic"
+                    android:id="@+id/text_bio_critic"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="5dp"
@@ -101,13 +100,14 @@
                     />
 
             </LinearLayout>
+
         </android.support.v7.widget.CardView>
 
     </ScrollView>
 
     <android.support.v7.widget.RecyclerView
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/recycler_view_critic"
+        android:id="@+id/recycler_critic"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />

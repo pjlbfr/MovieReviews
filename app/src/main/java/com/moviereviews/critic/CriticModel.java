@@ -1,11 +1,10 @@
-package com.moviereviews.models;
+package com.moviereviews.critic;
 
 import android.content.Context;
 import android.widget.Toast;
 
 import com.moviereviews.ApplicationMR;
 import com.moviereviews.R;
-import com.moviereviews.critic.CriticContract;
 import com.moviereviews.objectresponse.Reviews;
 
 import retrofit2.Call;

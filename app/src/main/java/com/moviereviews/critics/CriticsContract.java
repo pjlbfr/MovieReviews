@@ -13,7 +13,6 @@ public interface CriticsContract {
     }
 
     interface Presenter{
-        void setToFirstPage();
         void getCritics();
         void setCritics(List<Critic> critics);
         void getSearchByName(String name);

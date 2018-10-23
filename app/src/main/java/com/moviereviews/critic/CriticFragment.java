@@ -8,12 +8,10 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.moviereviews.R;
@@ -27,8 +25,7 @@ import java.util.List;
 
 public class CriticFragment extends Fragment implements CriticContract.View {
 
-    public static final String CRITIC_TAG = "Critic_Tag";
-    private RecyclerView recyclerView;
+    public static final String TAG = CriticFragment.class.getSimpleName();
     private ReviewsRecycleViewAdapter reviewsRecycleView;
     private CriticContract.Presenter presenter;
     private ArrayList<String> critic;
@@ -36,7 +33,7 @@ public class CriticFragment extends Fragment implements CriticContract.View {
     public static CriticFragment newInstance(ArrayList<String> critic) {
         CriticFragment fragment = new CriticFragment();
         Bundle bundle = new Bundle();
-        bundle.putStringArrayList(CRITIC_TAG, critic);
+        bundle.putStringArrayList(TAG, critic);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -45,35 +42,36 @@ public class CriticFragment extends Fragment implements CriticContract.View {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null)
-            critic = getArguments().getStringArrayList(CRITIC_TAG);
+            critic = getArguments().getStringArrayList(TAG);
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_critic, null);
-
         ImageView imageView = (ImageView) view.findViewById(R.id.image_critic_in_activity);
-
+        // вывод фотографии критика на экран, если есть ссылка на нее
+        // иначе выводим картинку critic_default.png
         if (critic.size() == 4)
             Picasso.get()
                     .load(critic.get(3))
                     .into(imageView);
         else imageView.setImageResource(R.drawable.critic_default);
-
-        TextView nameCritic = (TextView)view.findViewById(R.id.text_view_display_name_critic);
+        // вывод name критика
+        TextView nameCritic = (TextView)view.findViewById(R.id.text_display_name_critic);
         nameCritic.setText(critic.get(0));
-
-        TextView status = (TextView)view.findViewById(R.id.text_view_status_critic);
+        // вывод status критика
+        TextView status = (TextView)view.findViewById(R.id.text_status_critic);
         status.setText(critic.get(1));
-
-        final TextView bio = (TextView)view.findViewById(R.id.text_view_bio_critic);
-
+        // вывод bio критика, если оно существует,
+        // иначе убираем с экрана textview, отображающее его
+        final TextView bio = (TextView)view.findViewById(R.id.text_bio_critic);
         if (!critic.get(2).isEmpty()){
             bio.setText(Html.fromHtml(critic.get(2)));
         } else
             bio.setVisibility(View.GONE);
-
-        CardView cardView = (CardView) view.findViewById(R.id.card_view_critic);
+        CardView cardView = (CardView) view.findViewById(R.id.card_critic);
+        // нажатием на карточку, делаем видимой или невидимой bio критика
+        // для удобства просмотра списка его рецензий
         cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -83,10 +81,7 @@ public class CriticFragment extends Fragment implements CriticContract.View {
                 bio.setVisibility(View.GONE);
             }
         });
-
-
-
-        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view_critic);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_critic);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         reviewsRecycleView = new ReviewsRecycleViewAdapter();
         reviewsRecycleView.setCanLoadMore(true);

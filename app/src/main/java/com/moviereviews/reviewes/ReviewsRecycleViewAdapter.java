@@ -20,7 +20,6 @@ import java.util.List;
 public class ReviewsRecycleViewAdapter extends RecyclerView.Adapter<ReviewsRecycleViewAdapter.ViewHolder> {
 
     private List<Review> reviews = new ArrayList<>();
-    private CardView cardView;
     private boolean isLoading = false;
     private boolean canLoadMore = true;
     private LoadPageListener loadPageListener;
@@ -32,7 +31,7 @@ public class ReviewsRecycleViewAdapter extends RecyclerView.Adapter<ReviewsRecyc
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        cardView = (CardView) LayoutInflater.from(parent.getContext()).inflate(R.layout.item_review, parent,false);
+        CardView cardView = (CardView) LayoutInflater.from(parent.getContext()).inflate(R.layout.item_review, parent, false);
         return new ViewHolder(cardView);
     }
 

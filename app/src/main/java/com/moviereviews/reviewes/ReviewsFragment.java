@@ -26,12 +26,10 @@ import java.util.List;
 public class ReviewsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener,ReviewsContract.View{
 
     private SwipeRefreshLayout swipeRefreshLayout;
-    private RecyclerView recyclerView;
     private ReviewsContract.Presenter presenter;
     private ReviewsRecycleViewAdapter reviewsRecycleView;
     private TextView textViewDate;
     private EditText editTextSearch;
-    private int pageSize = 20;
 
     public static ReviewsFragment newInstance() {
         return new ReviewsFragment();
@@ -44,12 +42,12 @@ public class ReviewsFragment extends Fragment implements SwipeRefreshLayout.OnRe
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.recycle_view, null);
-        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh);
+        View view = inflater.inflate(R.layout.fragment_reviews, null);
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_reviews);
         swipeRefreshLayout.setOnRefreshListener(this);
 
         // обработка введенных данных в textview поиска по имени
-        editTextSearch = (EditText) view.findViewById(R.id.tv_search);
+        editTextSearch = (EditText) view.findViewById(R.id.text_search_reviews);
         editTextSearch.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View view, int keyCode, KeyEvent event) {
@@ -65,9 +63,8 @@ public class ReviewsFragment extends Fragment implements SwipeRefreshLayout.OnRe
                 return false;
             }
         });
-
         // обработка нажатия на textview поиска по дате публикации
-        textViewDate = (TextView) view.findViewById(R.id.tv_date);
+        textViewDate = (TextView) view.findViewById(R.id.text_date);
         textViewDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -94,7 +91,7 @@ public class ReviewsFragment extends Fragment implements SwipeRefreshLayout.OnRe
             }
         });
 
-        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_reviews);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         reviewsRecycleView = new ReviewsRecycleViewAdapter();
         reviewsRecycleView.setCanLoadMore(true);
@@ -112,6 +109,7 @@ public class ReviewsFragment extends Fragment implements SwipeRefreshLayout.OnRe
 
     @Override
     public void setData(List<Review> reviews) {
+        int pageSize = 20;
         if (reviews.size() < pageSize)
             reviewsRecycleView.setCanLoadMore(false);
         reviewsRecycleView.setData(reviews);

@@ -29,5 +29,4 @@ public interface NYTApi {
 
     @GET("reviews/search.json?api-key="+apiKey)
     Call<Reviews> getSearchCriticReviews(@Query("reviewer") String reviewer, @Query("offset") int offset);
-
 }

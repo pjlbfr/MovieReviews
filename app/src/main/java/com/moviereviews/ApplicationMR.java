@@ -7,7 +7,7 @@ import com.moviereviews.interfaces.NYTApi;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class AppplicationMR extends Application {
+public class ApplicationMR extends Application {
 
     private static NYTApi sNYTApi;
     private Retrofit retrofit;

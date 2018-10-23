@@ -6,14 +6,13 @@
               >
 
     <android.support.v7.widget.AppCompatTextView
-        android:id="@+id/title"
+        android:id="@+id/text_title"
         style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
-        android:text="@string/reviewes"
-        android:textColor="#FFFFFF"
-        />
+        android:text="@string/reviews"
+        android:textColor="@color/colorWhite"/>
 
 </LinearLayout>

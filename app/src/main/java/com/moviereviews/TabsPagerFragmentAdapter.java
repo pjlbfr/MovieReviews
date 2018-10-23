@@ -7,8 +7,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 import com.moviereviews.critics.CriticsFragment;
 import com.moviereviews.critics.CriticsPresenter;
-import com.moviereviews.objectresponse.Critics;
-import com.moviereviews.objectresponse.Resource;
 import com.moviereviews.reviewes.ReviewsFragment;
 import com.moviereviews.reviewes.ReviewsPresenter;
 

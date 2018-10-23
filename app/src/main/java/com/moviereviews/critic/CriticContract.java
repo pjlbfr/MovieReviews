@@ -14,6 +14,5 @@ public interface CriticContract {
         void setOffsetZero();
         void getReviews(String name);
         void setReviews(List<Review> reviews);
-
     }
 }

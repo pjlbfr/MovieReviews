@@ -1,11 +1,11 @@
-package com.moviereviews.models;
+package com.moviereviews.critics;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.widget.Toast;
 
 import com.moviereviews.ApplicationMR;
 import com.moviereviews.R;
-import com.moviereviews.critics.CriticsContract;
 import com.moviereviews.objectresponse.Critics;
 
 import retrofit2.Call;
@@ -16,28 +16,23 @@ public class CriticsModel {
 
     private Context context;
     private CriticsContract.Presenter presenter;
-    private int page = 0;
 
     public CriticsModel(Context context, CriticsContract.Presenter presenter) {
         this.context = context;
         this.presenter = presenter;
     }
 
-    public void setToFirstPage(){
-        this.page = 0;
-    }
-
     public void getCritics(){
         ApplicationMR.getApi().getCritics().enqueue(new Callback<Critics>() {
             @Override
-            public void onResponse(Call<Critics> call, Response<Critics> response) {
+            public void onResponse(@NonNull Call<Critics> call, @NonNull Response<Critics> response) {
                 if (response.body() != null){
                     presenter.setCritics(response.body().getCritics());
                 }
             }
 
             @Override
-            public void onFailure(Call<Critics> call, Throwable t) {
+            public void onFailure(@NonNull Call<Critics> call, @NonNull Throwable t) {
                 Toast.makeText(context, context.getResources().getText(R.string.error_message), Toast.LENGTH_LONG).show();
             }
         });
@@ -46,14 +41,14 @@ public class CriticsModel {
     public void getSearchByName(String name){
         ApplicationMR.getApi().getSearchNameCritic(name).enqueue(new Callback<Critics>() {
             @Override
-            public void onResponse(Call<Critics> call, Response<Critics> response) {
+            public void onResponse(@NonNull Call<Critics> call, @NonNull  Response<Critics> response) {
                 if (response.body() != null){
                     presenter.setCritics(response.body().getCritics());
                 }
             }
 
             @Override
-            public void onFailure(Call<Critics> call, Throwable t) {
+            public void onFailure(@NonNull Call<Critics> call, @NonNull  Throwable t) {
                 Toast.makeText(context, context.getResources().getText(R.string.error_message), Toast.LENGTH_LONG).show();
             }
         });

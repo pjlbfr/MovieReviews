@@ -6,18 +6,14 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatTextView;
-import android.support.v7.widget.RecyclerView;
 
 import com.moviereviews.R;
-import com.moviereviews.reviewes.ReviewsRecycleViewAdapter;
 
 import java.util.ArrayList;
 
 public class CriticActivity extends AppCompatActivity{
 
-    public static final String CRITIC_TAG = "Critic_Tag";
-    private RecyclerView recyclerView;
-    private ReviewsRecycleViewAdapter reviewsRecycleView;
+    public static final String TAG = CriticActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,12 +21,13 @@ public class CriticActivity extends AppCompatActivity{
         setContentView(R.layout.activity_critic);
 
         Intent intent = getIntent();
-        ArrayList<String> critic = intent.getStringArrayListExtra(CRITIC_TAG);
-
+        // список, содержащий все нужные для вывода на экран данные
+        ArrayList<String> critic = intent.getStringArrayListExtra(TAG);
+        // установка заголовка приложения именем критика
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
             getSupportActionBar().setCustomView(R.layout.actionbar_title);
-            AppCompatTextView textView = (AppCompatTextView) getSupportActionBar().getCustomView().findViewById(R.id.title);
+            AppCompatTextView textView = (AppCompatTextView) getSupportActionBar().getCustomView().findViewById(R.id.text_title);
             textView.setText(critic.get(0));
             getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.colorCritics)));
             getSupportActionBar().setElevation(0);
@@ -40,6 +37,6 @@ public class CriticActivity extends AppCompatActivity{
         getSupportFragmentManager().beginTransaction()
                                    .replace(R.id.frame_layout, criticFragment)
                                    .commit();
-        CriticPresenter presenter = new CriticPresenter(this, criticFragment);
+        new CriticPresenter(this, criticFragment);
     }
 }

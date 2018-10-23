@@ -21,7 +21,6 @@ import java.util.List;
 public class CriticsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, CriticsContract.View{
 
     private SwipeRefreshLayout swipeRefreshLayout;
-    private RecyclerView recyclerView;
     private CriticsContract.Presenter presenter;
     private CriticsRecycleViewAdapter criticsRecycleView;
     private EditText editTextSearch;
@@ -40,24 +39,25 @@ public class CriticsFragment extends Fragment implements SwipeRefreshLayout.OnRe
         View view = inflater.inflate(R.layout.fragment_critics, null);
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_critics);
         swipeRefreshLayout.setOnRefreshListener(this);
-
         // обработка в edittext поиска по имени
-        editTextSearch = (EditText) view.findViewById(R.id.tv_search_critic);
+        editTextSearch = (EditText) view.findViewById(R.id.text_search_critic);
         editTextSearch.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View view, int keyCode, KeyEvent event) {
                 if(event.getAction() == KeyEvent.ACTION_DOWN &&
                         (keyCode == KeyEvent.KEYCODE_ENTER))
                 {
-                    presenter.getSearchByName(editTextSearch.getText().toString());
+                    if (!editTextSearch.getText().toString().isEmpty())
+                        presenter.getSearchByName(editTextSearch.getText().toString());
+                    else
+                        presenter.getCritics();
                     criticsRecycleView.clear();
                     return true;
                 }
                 return false;
             }
         });
-
-        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view_critics);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_critics);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         criticsRecycleView = new CriticsRecycleViewAdapter();
         recyclerView.setAdapter(criticsRecycleView);
@@ -77,7 +77,6 @@ public class CriticsFragment extends Fragment implements SwipeRefreshLayout.OnRe
 
     @Override
     public void onRefresh() {
-        presenter.setToFirstPage();
         criticsRecycleView.clear();
         presenter.getCritics();
         swipeRefreshLayout.setRefreshing(false);
