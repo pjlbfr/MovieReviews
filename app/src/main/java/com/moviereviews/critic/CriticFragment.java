@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,12 +24,13 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CriticFragment extends Fragment implements CriticContract.View {
+public class CriticFragment extends Fragment implements CriticContract.View, SwipeRefreshLayout.OnRefreshListener{
 
     public static final String TAG = CriticFragment.class.getSimpleName();
     private ReviewsRecycleViewAdapter reviewsRecycleView;
     private CriticContract.Presenter presenter;
     private ArrayList<String> critic;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     public static CriticFragment newInstance(ArrayList<String> critic) {
         CriticFragment fragment = new CriticFragment();
@@ -89,6 +91,8 @@ public class CriticFragment extends Fragment implements CriticContract.View {
         recyclerView.setAdapter(reviewsRecycleView);
         presenter.setOffsetZero();
         presenter.getReviews(critic.get(0));
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_critic);
+        swipeRefreshLayout.setRefreshing(true);
         return view;
     }
 
@@ -97,6 +101,7 @@ public class CriticFragment extends Fragment implements CriticContract.View {
         if (reviews.size() < 20)
             reviewsRecycleView.setCanLoadMore(false);
         reviewsRecycleView.setData(reviews);
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -109,6 +114,12 @@ public class CriticFragment extends Fragment implements CriticContract.View {
         public void loadPage() {
             presenter.getReviews(critic.get(0));
             reviewsRecycleView.setLoaded();
+            swipeRefreshLayout.setRefreshing(true);
         }
     };
+
+    @Override
+    public void onRefresh() {
+        swipeRefreshLayout.setRefreshing(false);
+    }
 }

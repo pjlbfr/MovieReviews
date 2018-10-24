@@ -10,7 +10,7 @@ import java.util.List;
 public class CriticPresenter implements CriticContract.Presenter{
 
     private CriticContract.View view;
-    private CriticModel model;
+    private CriticContract.Model model;
 
     public CriticPresenter(Context context, @NonNull CriticContract.View view) {
         this.view = view;

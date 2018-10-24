@@ -39,15 +39,8 @@ public class TabsPagerFragmentAdapter extends FragmentPagerAdapter {
         return 2;
     }
 
-    @Override    public CharSequence getPageTitle(int position) {
-        switch (position) {
-            case 0:
-                return "Reviewes";
-            case 1:
-                return "Critics";
-            default:
-                return null;
-        }
-
+    @Override
+    public CharSequence getPageTitle(int position) {
+        return null;
     }
 }

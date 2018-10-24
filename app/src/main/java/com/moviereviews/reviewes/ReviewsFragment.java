@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.app.DatePickerDialog;
 
@@ -99,6 +100,7 @@ public class ReviewsFragment extends Fragment implements SwipeRefreshLayout.OnRe
         recyclerView.setAdapter(reviewsRecycleView);
         presenter.setToFirstPage();
         presenter.getReviews();
+        swipeRefreshLayout.setRefreshing(true);
         return view;
     }
 
@@ -113,6 +115,7 @@ public class ReviewsFragment extends Fragment implements SwipeRefreshLayout.OnRe
         if (reviews.size() < pageSize)
             reviewsRecycleView.setCanLoadMore(false);
         reviewsRecycleView.setData(reviews);
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     LoadPageListener loadPageListener = new LoadPageListener() {
@@ -120,6 +123,7 @@ public class ReviewsFragment extends Fragment implements SwipeRefreshLayout.OnRe
         public void loadPage() {
             presenter.getReviews();
             reviewsRecycleView.setLoaded();
+            swipeRefreshLayout.setRefreshing(true);
         }
     };
 

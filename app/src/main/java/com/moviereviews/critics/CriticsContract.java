@@ -18,5 +18,8 @@ public interface CriticsContract {
         void getSearchByName(String name);
     }
 
-
+    interface Model {
+        void getCritics();
+        void getSearchByName(String name);
+    }
 }

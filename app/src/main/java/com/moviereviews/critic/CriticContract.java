@@ -15,4 +15,9 @@ public interface CriticContract {
         void getReviews(String name);
         void setReviews(List<Review> reviews);
     }
+
+    interface Model {
+        void setOffsetZero();
+        void getReviews(String name);
+    }
 }

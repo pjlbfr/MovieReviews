@@ -10,7 +10,7 @@ import java.util.List;
 public class ReviewsPresenter implements ReviewsContract.Presenter {
 
     private ReviewsContract.View view;
-    private ReviewsModel model;
+    private ReviewsContract.Model model;
 
     public ReviewsPresenter(Context context, @NonNull ReviewsContract.View view){
         this.view = view;

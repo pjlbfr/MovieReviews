@@ -12,7 +12,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ReviewsModel {
+public class ReviewsModel implements ReviewsContract.Model{
 
     private Context context;
     private ReviewsContract.Presenter presenter;
@@ -23,10 +23,12 @@ public class ReviewsModel {
         this.presenter = presenter;
     }
 
+    @Override
     public void setToFirstPage(){
         this.offset = 0;
     }
 
+    @Override
     public void getReviews(){
         ApplicationMR.getApi().getReviews(offset).enqueue(new Callback<Reviews>() {
             @Override
@@ -44,6 +46,7 @@ public class ReviewsModel {
         });
     }
 
+    @Override
     public void getSearchByTitle(String title){
         ApplicationMR.getApi().getSearchTitleReview(title).enqueue(new Callback<Reviews>() {
             @Override
@@ -61,6 +64,7 @@ public class ReviewsModel {
         });
     }
 
+    @Override
     public void getSearchByPublicationDate(String date){
         ApplicationMR.getApi().getSearchPublicationDateReview(date).enqueue(new Callback<Reviews>() {
             @Override

@@ -12,7 +12,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class CriticsModel {
+public class CriticsModel implements CriticsContract.Model {
 
     private Context context;
     private CriticsContract.Presenter presenter;
@@ -22,6 +22,7 @@ public class CriticsModel {
         this.presenter = presenter;
     }
 
+    @Override
     public void getCritics(){
         ApplicationMR.getApi().getCritics().enqueue(new Callback<Critics>() {
             @Override
@@ -38,6 +39,7 @@ public class CriticsModel {
         });
     }
 
+    @Override
     public void getSearchByName(String name){
         ApplicationMR.getApi().getSearchNameCritic(name).enqueue(new Callback<Critics>() {
             @Override

@@ -2,8 +2,8 @@
     <string name="app_name">MovieReviews</string>
     <string name="critics">Critics</string>
     <string name="reviews">Reviewes</string>
-    <string name="date">2017 / 12 / 10</string>
-    <string name="format_date">yyyy/mm/dd</string>
+    <string name="date">2018 / 11 / 13</string>
     <string name="error_message">No internet access, check connection!</string>
-    <string name="api_key">b4d57bcd057d49f1bb5419da52469f95</string>
+    <string name="hint_enter_review_title">Enter the review title</string>
+    <string name="hint_enter_critic_name">Enter the name</string>
 </resources>

@@ -11,7 +11,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class CriticModel {
+public class CriticModel implements CriticContract.Model{
 
     private Context context;
     private CriticContract.Presenter presenter;
@@ -22,10 +22,12 @@ public class CriticModel {
         this.presenter = presenter;
     }
 
+    @Override
     public void setOffsetZero(){
         this.offset = 0;
     }
 
+    @Override
     public void getReviews(String name) {
         ApplicationMR.getApi().getSearchCriticReviews(name, offset).enqueue(new Callback<Reviews>() {
             @Override
@@ -42,5 +44,4 @@ public class CriticModel {
             }
         });
     }
-
 }

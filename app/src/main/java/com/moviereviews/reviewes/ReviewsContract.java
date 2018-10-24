@@ -18,4 +18,11 @@ public interface ReviewsContract {
         void getSearchByTitle(String title);
         void getSearchByPublicationDate(String date);
     }
+
+    interface Model{
+        void setToFirstPage();
+        void getReviews();
+        void getSearchByTitle(String title);
+        void getSearchByPublicationDate(String date);
+    }
 }
