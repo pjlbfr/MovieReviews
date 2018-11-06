@@ -1,7 +1,6 @@
 package com.moviereviews.critic;
 
 import android.app.ActionBar;
-import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -10,11 +9,7 @@ import android.support.v7.widget.AppCompatTextView;
 import com.moviereviews.R;
 import com.moviereviews.objectresponse.Critic;
 
-import java.util.ArrayList;
-
 public class CriticActivity extends AppCompatActivity{
-
-    public static final String TAG = CriticActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -1,6 +1,5 @@
 package com.moviereviews.critics;
 
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -11,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.moviereviews.R;
-import com.moviereviews.critic.CriticActivity;
+import com.moviereviews.interfaces.OnCriticCardClickListener;
 import com.moviereviews.objectresponse.Critic;
 import com.moviereviews.objectresponse.MultimediaCritic;
 import com.squareup.picasso.Picasso;
@@ -22,6 +21,11 @@ import java.util.List;
 public class CriticsRecycleViewAdapter extends RecyclerView.Adapter<CriticsRecycleViewAdapter.ViewHolder> {
 
     private List<Critic> critics = new ArrayList<>();
+    private OnCriticCardClickListener onCriticCardClickListener;
+
+    public void setOnCriticCardClickListener(OnCriticCardClickListener listener){
+        this.onCriticCardClickListener = listener;
+    }
 
     @NonNull
     @Override
@@ -77,10 +81,7 @@ public class CriticsRecycleViewAdapter extends RecyclerView.Adapter<CriticsRecyc
             cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(view.getContext(), CriticActivity.class);
-                    Critic critic = critics.get(getAdapterPosition());
-                    intent.putExtra(Critic.class.getSimpleName(), critic);
-                    view.getContext().startActivity(intent);
+                    onCriticCardClickListener.onClick(critics.get(getAdapterPosition()));
                 }
             });
         }

@@ -1,5 +1,6 @@
 package com.moviereviews.critics;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,6 +15,8 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.moviereviews.R;
+import com.moviereviews.critic.CriticActivity;
+import com.moviereviews.interfaces.OnCriticCardClickListener;
 import com.moviereviews.objectresponse.Critic;
 
 import java.util.List;
@@ -60,6 +63,7 @@ public class CriticsFragment extends Fragment implements SwipeRefreshLayout.OnRe
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_critics);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         criticsRecycleView = new CriticsRecycleViewAdapter();
+        criticsRecycleView.setOnCriticCardClickListener(onCriticCardClickListener);
         recyclerView.setAdapter(criticsRecycleView);
         presenter.getCritics();
         return view;
@@ -81,4 +85,13 @@ public class CriticsFragment extends Fragment implements SwipeRefreshLayout.OnRe
         presenter.getCritics();
         swipeRefreshLayout.setRefreshing(false);
     }
+
+    OnCriticCardClickListener onCriticCardClickListener = new OnCriticCardClickListener() {
+        @Override
+        public void onClick(Critic critic) {
+            Intent intent = new Intent(getContext(), CriticActivity.class);
+            intent.putExtra(Critic.class.getSimpleName(), critic);
+            getContext().startActivity(intent);
+        }
+    };
 }

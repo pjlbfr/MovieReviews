@@ -3,7 +3,9 @@ package com.moviereviews.objectresponse;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Review {
+import io.realm.RealmObject;
+
+public class Review{
     @SerializedName("display_title")
     @Expose
     String displayTitle;

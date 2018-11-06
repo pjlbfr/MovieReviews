@@ -3,6 +3,8 @@ package com.moviereviews.objectresponse;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import io.realm.RealmObject;
+
 public class Critic implements Parcelable{
 
     String display_name;
