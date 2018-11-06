@@ -17,11 +17,11 @@ import android.widget.TextView;
 
 import com.moviereviews.R;
 import com.moviereviews.interfaces.LoadPageListener;
+import com.moviereviews.objectresponse.Critic;
 import com.moviereviews.objectresponse.Review;
 import com.moviereviews.reviewes.ReviewsRecycleViewAdapter;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CriticFragment extends Fragment implements CriticContract.View, SwipeRefreshLayout.OnRefreshListener{
@@ -29,13 +29,13 @@ public class CriticFragment extends Fragment implements CriticContract.View, Swi
     public static final String TAG = CriticFragment.class.getSimpleName();
     private ReviewsRecycleViewAdapter reviewsRecycleView;
     private CriticContract.Presenter presenter;
-    private ArrayList<String> critic;
+    private Critic critic;
     private SwipeRefreshLayout swipeRefreshLayout;
 
-    public static CriticFragment newInstance(ArrayList<String> critic) {
+    public static CriticFragment newInstance(Critic critic){
         CriticFragment fragment = new CriticFragment();
         Bundle bundle = new Bundle();
-        bundle.putStringArrayList(TAG, critic);
+        bundle.putParcelable(TAG, critic);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -43,8 +43,9 @@ public class CriticFragment extends Fragment implements CriticContract.View, Swi
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null)
-            critic = getArguments().getStringArrayList(TAG);
+        if (getArguments() != null){
+            critic = getArguments().getParcelable(TAG);
+        }
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -53,22 +54,22 @@ public class CriticFragment extends Fragment implements CriticContract.View, Swi
         ImageView imageView = (ImageView) view.findViewById(R.id.image_critic_in_activity);
         // вывод фотографии критика на экран, если есть ссылка на нее
         // иначе выводим картинку critic_default.png
-        if (critic.size() == 4)
+        if (critic.getMultimedia() != null)
             Picasso.get()
-                    .load(critic.get(3))
+                    .load(critic.getMultimedia().getResource().getSrc())
                     .into(imageView);
         else imageView.setImageResource(R.drawable.critic_default);
         // вывод name критика
         TextView nameCritic = (TextView)view.findViewById(R.id.text_display_name_critic);
-        nameCritic.setText(critic.get(0));
+        nameCritic.setText(critic.getDisplay_name());
         // вывод status критика
         TextView status = (TextView)view.findViewById(R.id.text_status_critic);
-        status.setText(critic.get(1));
+        status.setText(critic.getStatus());
         // вывод bio критика, если оно существует,
         // иначе убираем с экрана textview, отображающее его
         final TextView bio = (TextView)view.findViewById(R.id.text_bio_critic);
-        if (!critic.get(2).isEmpty()){
-            bio.setText(Html.fromHtml(critic.get(2)));
+        if (critic.getBio() != null){
+            bio.setText(Html.fromHtml(critic.getBio()));
         } else
             bio.setVisibility(View.GONE);
         CardView cardView = (CardView) view.findViewById(R.id.card_critic);
@@ -90,7 +91,7 @@ public class CriticFragment extends Fragment implements CriticContract.View, Swi
         reviewsRecycleView.setLoadPageListener(loadPageListener);
         recyclerView.setAdapter(reviewsRecycleView);
         presenter.setOffsetZero();
-        presenter.getReviews(critic.get(0));
+        presenter.getReviews(critic.getDisplay_name());
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_critic);
         swipeRefreshLayout.setRefreshing(true);
         return view;
@@ -112,7 +113,7 @@ public class CriticFragment extends Fragment implements CriticContract.View, Swi
     LoadPageListener loadPageListener = new LoadPageListener() {
         @Override
         public void loadPage() {
-            presenter.getReviews(critic.get(0));
+            presenter.getReviews(critic.getDisplay_name());
             reviewsRecycleView.setLoaded();
             swipeRefreshLayout.setRefreshing(true);
         }

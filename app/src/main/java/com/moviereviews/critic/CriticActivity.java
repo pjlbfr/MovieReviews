@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatTextView;
 
 import com.moviereviews.R;
+import com.moviereviews.objectresponse.Critic;
 
 import java.util.ArrayList;
 
@@ -20,15 +21,16 @@ public class CriticActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_critic);
 
-        Intent intent = getIntent();
-        // список, содержащий все нужные для вывода на экран данные
-        ArrayList<String> critic = intent.getStringArrayListExtra(TAG);
+        Critic critic = getIntent().getParcelableExtra(Critic.class.getSimpleName());
+
         // установка заголовка приложения именем критика
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
             getSupportActionBar().setCustomView(R.layout.actionbar_title);
             AppCompatTextView textView = (AppCompatTextView) getSupportActionBar().getCustomView().findViewById(R.id.text_title);
-            textView.setText(critic.get(0));
+
+            textView.setText(critic.getDisplay_name());
+
             getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.colorCritics)));
             getSupportActionBar().setElevation(0);
         }

@@ -1,6 +1,9 @@
 package com.moviereviews.objectresponse;
 
-public class Critic{
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Critic implements Parcelable{
 
     String display_name;
     String sort_name;
@@ -56,4 +59,41 @@ public class Critic{
     public void setMultimedia(MultimediaCritic multimedia) {
         this.multimedia = multimedia;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(display_name);
+        parcel.writeString(sort_name);
+        parcel.writeString(status);
+        parcel.writeString(bio);
+        parcel.writeString(seo_name);
+        parcel.writeParcelable(multimedia, i);
+    }
+
+    public static final Parcelable.Creator<Critic> CREATOR = new Parcelable.Creator<Critic>(){
+
+      public Critic createFromParcel(Parcel in){
+          return new Critic(in);
+      }
+
+      @Override
+      public Critic[] newArray(int i){
+          return new Critic[i];
+      }
+    };
+
+    private Critic(Parcel parcel){
+        display_name = parcel.readString();
+        sort_name = parcel.readString();
+        status = parcel.readString();
+        bio = parcel.readString();
+        seo_name = parcel.readString();
+        multimedia = parcel.readParcelable(MultimediaCritic.class.getClassLoader());
+    }
+
 }

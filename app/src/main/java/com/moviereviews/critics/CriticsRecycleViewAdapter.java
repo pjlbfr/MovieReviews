@@ -43,21 +43,8 @@ public class CriticsRecycleViewAdapter extends RecyclerView.Adapter<CriticsRecyc
         else
             holder.imageCritic.setImageResource(R.drawable.critic_default);
         holder.displayName.setText(critic.getDisplay_name());
-        // обработка нажатия на карточку критика
-        holder.cardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(view.getContext(), CriticActivity.class);
-                ArrayList<String> list = new ArrayList<>();
-                list.add(critic.getDisplay_name());
-                list.add(critic.getStatus());
-                list.add(critic.getBio());
-                if (multimedia != null)
-                    list.add(multimedia.getResource().getSrc());
-                intent.putStringArrayListExtra(CriticActivity.TAG, list);
-                view.getContext().startActivity(intent);
-            }
-        });
+
+
     }
 
     @Override
@@ -86,6 +73,16 @@ public class CriticsRecycleViewAdapter extends RecyclerView.Adapter<CriticsRecyc
             cardView = itemView;
             imageCritic = (ImageView) cardView.findViewById(R.id.image_critic);
             displayName= (TextView) cardView.findViewById(R.id.tv_name_critic);
+            // обработка нажатия на карточку критика
+            cardView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(view.getContext(), CriticActivity.class);
+                    Critic critic = critics.get(getAdapterPosition());
+                    intent.putExtra(Critic.class.getSimpleName(), critic);
+                    view.getContext().startActivity(intent);
+                }
+            });
         }
     }
 }
