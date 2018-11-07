@@ -4,15 +4,32 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.Required;
 
-public class Critic implements Parcelable{
+public class Critic extends RealmObject implements Parcelable{
 
-    String display_name;
-    String sort_name;
-    String status;
-    String bio;
-    String seo_name;
-    MultimediaCritic multimedia;
+    @PrimaryKey
+    @Required
+    private String id;
+    private String display_name;
+    private String sort_name;
+    private String status;
+    private String bio;
+    private String seo_name;
+    private MultimediaCritic multimedia;
+
+    public Critic() {
+
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getDisplay_name() {
         return display_name;

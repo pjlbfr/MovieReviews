@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.app.DatePickerDialog;
 
@@ -52,7 +51,6 @@ public class ReviewsFragment extends Fragment implements SwipeRefreshLayout.OnRe
         editTextSearch.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View view, int keyCode, KeyEvent event) {
-                Log.d("TAG" , "НАЖАТО ПОИСК");
                 if(event.getAction() == KeyEvent.ACTION_DOWN &&
                         (keyCode == KeyEvent.KEYCODE_ENTER))
                 {
@@ -98,9 +96,10 @@ public class ReviewsFragment extends Fragment implements SwipeRefreshLayout.OnRe
         reviewsRecycleView.setCanLoadMore(true);
         reviewsRecycleView.setLoadPageListener(loadPageListener);
         recyclerView.setAdapter(reviewsRecycleView);
+
         presenter.setToFirstPage();
         presenter.getReviews();
-        swipeRefreshLayout.setRefreshing(true);
+        swipeRefreshLayout.setRefreshing(false);
         return view;
     }
 
@@ -123,14 +122,23 @@ public class ReviewsFragment extends Fragment implements SwipeRefreshLayout.OnRe
         public void loadPage() {
             presenter.getReviews();
             reviewsRecycleView.setLoaded();
-            swipeRefreshLayout.setRefreshing(true);
+            swipeRefreshLayout.setRefreshing(false);
         }
     };
 
     @Override
+    public void onDestroyView() {
+        presenter.close();
+        Log.d("TAG-----", "ONDESTROYVIEW");
+        super.onDestroyView();
+
+    }
+
+    @Override
     public void onRefresh() {
-        presenter.setToFirstPage();
         reviewsRecycleView.clear();
+        presenter.setToFirstPage();
+        presenter.setNotFirstLoad();
         presenter.getReviews();
         swipeRefreshLayout.setRefreshing(false);
     }

@@ -3,13 +3,19 @@ package com.moviereviews.objectresponse;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class Resource implements Parcelable{
+import io.realm.RealmObject;
+
+public class Resource extends RealmObject implements Parcelable{
 
     private String type;
     private String src;
     private int height;
     private int width;
     private String credit;
+
+    public Resource() {
+
+    }
 
     public String getType() {
         return type;

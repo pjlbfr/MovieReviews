@@ -9,19 +9,19 @@ public class Reviews {
 
     @SerializedName("status")
     @Expose
-    String status;
+    private String status;
 
     @SerializedName("copyright")
     @Expose
-    String copyright;
+    private String copyright;
 
     @SerializedName("num_results")
     @Expose
-    Integer num_results;
+    private Integer num_results;
 
     @SerializedName("results")
     @Expose
-    List<Review> results;
+    private List<Review> results;
 
     public String getStatus() {
         return status;

@@ -7,6 +7,9 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 import com.moviereviews.critics.CriticsFragment;
 import com.moviereviews.critics.CriticsPresenter;
+import com.moviereviews.repository.ReviewsRepository;
+import com.moviereviews.repository.local.ReviewsLocalDataSource;
+import com.moviereviews.repository.remote.ReviewsRemoteDataSource;
 import com.moviereviews.reviewes.ReviewsFragment;
 import com.moviereviews.reviewes.ReviewsPresenter;
 
@@ -22,10 +25,15 @@ public class TabsPagerFragmentAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         switch (position){
+            // вкладка рецензии
             case 0:
                 ReviewsFragment fragmentReviews = ReviewsFragment.newInstance();
-                new ReviewsPresenter(context,fragmentReviews);
+                new ReviewsPresenter(context,
+                                     fragmentReviews,
+                                     ReviewsRepository.getInstance(ReviewsRemoteDataSource.getInstance(),
+                                                                   ReviewsLocalDataSource.getInstance(context)));
                 return fragmentReviews;
+             // вкладка критики
             case 1:
                 CriticsFragment fragmentCritics = CriticsFragment.newInstance();
                 new CriticsPresenter(context, fragmentCritics);

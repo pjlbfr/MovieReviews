@@ -9,19 +9,19 @@ public class Critics {
 
     @SerializedName("status")
     @Expose
-    String status;
+    private String status;
 
     @SerializedName("copyright")
     @Expose
-    String copyright;
+    private String copyright;
 
     @SerializedName("num_results")
     @Expose
-    int numResults;
+    private int numResults;
 
     @SerializedName("results")
     @Expose
-    List<Critic> critics;
+    private List<Critic> critics;
 
     public String getStatus() {
         return status;

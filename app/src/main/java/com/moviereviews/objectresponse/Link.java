@@ -3,16 +3,19 @@ package com.moviereviews.objectresponse;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Link {
+import io.realm.RealmObject;
+
+public class Link extends RealmObject{
+
     @SerializedName("type")
     @Expose
-    String type;
+    private String type;
     @SerializedName("url")
     @Expose
-    String url;
+    private String url;
     @SerializedName("suggested_link_text")
     @Expose
-    String suggested_link_text;
+    private String suggested_link_text;
 
     public String getType() {
         return type;

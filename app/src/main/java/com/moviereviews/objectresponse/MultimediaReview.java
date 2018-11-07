@@ -3,19 +3,21 @@ package com.moviereviews.objectresponse;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class MultimediaReview {
+import io.realm.RealmObject;
+
+public class MultimediaReview extends RealmObject{
     @SerializedName("type")
     @Expose
-    String type;
+    private String type;
     @SerializedName("src")
     @Expose
-    String src;
+    private  String src;
     @SerializedName("height")
     @Expose
-    Integer height;
+    private Integer height;
     @SerializedName("width")
     @Expose
-    Integer width;
+    private Integer width;
 
     public String getType() {
         return type;

@@ -14,15 +14,10 @@ public interface ReviewsContract {
     interface Presenter{
         void setToFirstPage();
         void getReviews();
+        void setNotFirstLoad();
         void setReviews(List<Review> reviews);
         void getSearchByTitle(String title);
         void getSearchByPublicationDate(String date);
-    }
-
-    interface Model{
-        void setToFirstPage();
-        void getReviews();
-        void getSearchByTitle(String title);
-        void getSearchByPublicationDate(String date);
+        void close();
     }
 }

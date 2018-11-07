@@ -4,41 +4,56 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.Required;
 
-public class Review{
+public class Review extends RealmObject{
+
+    @PrimaryKey
+    @Required
+    private String id;
+
     @SerializedName("display_title")
     @Expose
-    String displayTitle;
+    private String displayTitle;
     @SerializedName("mpaa_rating")
     @Expose
-    String mpaaRating;
+    private String mpaaRating;
     @SerializedName("critics_pick")
     @Expose
-    Integer criticsPick;
+    private Integer criticsPick;
     @SerializedName("byline")
     @Expose
-    String byline;
+    private String byline;
     @SerializedName("headline")
     @Expose
-    String headline;
+    private String headline;
     @SerializedName("summary_short")
     @Expose
-    String summaryShort;
+    private String summaryShort;
     @SerializedName("publication_date")
     @Expose
-    String publicationDate;
+    private String publicationDate;
     @SerializedName("opening_date")
     @Expose
-    String openingDate;
+    private String openingDate;
     @SerializedName("date_updated")
     @Expose
-    String dateUpdated;
+    private String dateUpdated;
     @SerializedName("link")
     @Expose
-    Link link;
+    private Link link;
     @SerializedName("multimedia")
     @Expose
-    MultimediaReview multimedia;
+    private MultimediaReview multimedia;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getDisplayTitle() {
         return displayTitle;

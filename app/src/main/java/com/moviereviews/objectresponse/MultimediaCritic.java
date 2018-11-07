@@ -3,12 +3,14 @@ package com.moviereviews.objectresponse;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class MultimediaCritic implements Parcelable{
+import io.realm.RealmObject;
+
+public class MultimediaCritic extends RealmObject implements Parcelable{
 
     private Resource resource;
 
-    public MultimediaCritic(Resource resource) {
-        this.resource = resource;
+    public MultimediaCritic() {
+
     }
 
     public Resource getResource() {
