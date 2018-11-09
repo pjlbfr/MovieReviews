@@ -16,21 +16,27 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.moviereviews.R;
-import com.moviereviews.interfaces.LoadPageListener;
 import com.moviereviews.objectresponse.Critic;
 import com.moviereviews.objectresponse.Review;
+import com.moviereviews.reviewes.ReviewsLoadingItemCreator;
 import com.moviereviews.reviewes.ReviewsRecycleViewAdapter;
+import com.paginate.Paginate;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-public class CriticFragment extends Fragment implements CriticContract.View, SwipeRefreshLayout.OnRefreshListener{
+public class CriticFragment extends Fragment implements CriticContract.View, SwipeRefreshLayout.OnRefreshListener, Paginate.Callbacks{
 
     public static final String TAG = CriticFragment.class.getSimpleName();
     private ReviewsRecycleViewAdapter reviewsRecycleView;
     private CriticContract.Presenter presenter;
     private Critic critic;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private RecyclerView recyclerView;
+    private Paginate paginate;
+    private boolean hasMoreReviews = true;
+    private boolean loading = false;
+    private boolean isRefresh = false;
 
     public static CriticFragment newInstance(Critic critic){
         CriticFragment fragment = new CriticFragment();
@@ -84,10 +90,9 @@ public class CriticFragment extends Fragment implements CriticContract.View, Swi
                 bio.setVisibility(View.GONE);
             }
         });
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_critic);
+        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_critic);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         reviewsRecycleView = new ReviewsRecycleViewAdapter();
-        reviewsRecycleView.setLoadPageListener(loadPageListener);
         recyclerView.setAdapter(reviewsRecycleView);
         presenter.setOffsetZero();
         presenter.getReviews(critic.getDisplay_name());
@@ -107,17 +112,38 @@ public class CriticFragment extends Fragment implements CriticContract.View, Swi
         this.presenter = presenter;
     }
 
-    LoadPageListener loadPageListener = new LoadPageListener() {
-        @Override
-        public void loadPage() {
-            presenter.getReviews(critic.getDisplay_name());
-          //  reviewsRecycleView.setLoaded();
-            swipeRefreshLayout.setRefreshing(false);
-        }
-    };
-
     @Override
     public void onRefresh() {
         swipeRefreshLayout.setRefreshing(false);
     }
+
+    private void initPaginate(){
+        if (paginate != null)
+            return;
+        paginate = Paginate.with(recyclerView, this)
+                .setLoadingTriggerThreshold(2)
+                .addLoadingListItem(true)
+                .setLoadingListItemCreator(new ReviewsLoadingItemCreator())
+                .build();
+    }
+
+    @Override
+    public void onLoadMore() {
+        loading = true;
+     //   if (!isRefresh)
+       //     presenter.loadReviews(reviewsAdapter.getItemCount(), editTextSearch.getText().toString(), "");
+    }
+
+    @Override
+    public boolean isLoading() {
+        return loading;
+    }
+
+    @Override
+    public boolean hasLoadedAllItems() {
+        return !hasMoreReviews;
+    }
+
+
+
 }

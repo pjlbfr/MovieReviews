@@ -22,11 +22,11 @@ public class ReviewsPresenter implements ReviewsContract.Presenter {
 
     @Override
     public void loadReviews(int page, String title, String date) {
-        if (hasMoreReviews) {
+      //  if (hasMoreReviews) {
             reviewsRepository.loadReviews(page, title, date, new ReviewsDataSource.ReviewsCallback() {
                 @Override
                 public void onReviewsLoaded(List<Review> reviews, boolean hasMoreReviews) {
-                    view.setData(reviews);
+                    view.setData(reviews, hasMoreReviews);
                     setHasMoreReviews(hasMoreReviews);
                 }
 
@@ -35,7 +35,7 @@ public class ReviewsPresenter implements ReviewsContract.Presenter {
 
                 }
             });
-        }
+        //}
     }
 
     private void setHasMoreReviews(boolean hasMore){
@@ -50,7 +50,7 @@ public class ReviewsPresenter implements ReviewsContract.Presenter {
                 if (reviews.size() == 0){
                     view.showMessageIsEmpty();
                 }else {
-                    view.setData(reviews);
+                    view.setData(reviews, hasMoreReviews);
                     setHasMoreReviews(hasMoreReviews);
                 }
             }
@@ -62,10 +62,10 @@ public class ReviewsPresenter implements ReviewsContract.Presenter {
         });
     }
 
-    @Override
-    public void setReviews(List<Review> reviews) {
-        view.setData(reviews);
-    }
+//    @Override
+//    public void setReviews(List<Review> reviews) {
+//        view.setData(reviews, hasMoreReviews);
+//    }
 
     @Override
     public void close() {

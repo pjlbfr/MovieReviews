@@ -9,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.moviereviews.R;
-import com.moviereviews.interfaces.LoadPageListener;
 import com.moviereviews.objectresponse.MultimediaReview;
 import com.moviereviews.objectresponse.Review;
 import com.squareup.picasso.Picasso;
@@ -17,15 +16,9 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ReviewsRecycleViewAdapter extends RecyclerView.Adapter<ReviewsRecycleViewAdapter.ViewHolder> {
+public class ReviewsRecycleViewAdapter extends RecyclerView.Adapter<ReviewsRecycleViewAdapter.ViewHolder>{
 
     private List<Review> reviews = new ArrayList<>();
-    private boolean isLoading = false;
-    private LoadPageListener loadPageListener;
-
-    public void setLoadPageListener(LoadPageListener listener){
-        this.loadPageListener = listener;
-    }
 
     @NonNull
     @Override
@@ -36,11 +29,6 @@ public class ReviewsRecycleViewAdapter extends RecyclerView.Adapter<ReviewsRecyc
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        if (position == getItemCount()-1 && !isLoading){
-            loadPageListener.loadPage();
-            isLoading = true;
-        }
-
         MultimediaReview multimedia = reviews.get(position).getMultimedia();
         if (multimedia != null)
             Picasso.get()
@@ -62,7 +50,6 @@ public class ReviewsRecycleViewAdapter extends RecyclerView.Adapter<ReviewsRecyc
 
     public void setData(List<Review> list){
         reviews.addAll(list);
-        isLoading = false;
         notifyDataSetChanged();
     }
 
@@ -71,7 +58,7 @@ public class ReviewsRecycleViewAdapter extends RecyclerView.Adapter<ReviewsRecyc
         notifyDataSetChanged();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public static class ViewHolder extends RecyclerView.ViewHolder{
 
         private ImageView imageReview;
         private TextView displayTitle;

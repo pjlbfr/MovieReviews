@@ -18,8 +18,8 @@ import android.app.DatePickerDialog;
 import android.widget.Toast;
 
 import com.moviereviews.R;
-import com.moviereviews.interfaces.LoadPageListener;
 import com.moviereviews.objectresponse.Review;
+import com.paginate.Paginate;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -27,15 +27,19 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-public class ReviewsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, ReviewsContract.View {
+public class ReviewsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, ReviewsContract.View, Paginate.Callbacks {
 
     private SwipeRefreshLayout swipeRefreshLayout;
     private ReviewsContract.Presenter presenter;
+    private RecyclerView recyclerView;
     private ReviewsRecycleViewAdapter reviewsAdapter;
     private TextView textViewDate;
     private EditText editTextSearch;
     private boolean isRefresh = false;
     private String title = "";
+    private Paginate paginate;
+    private boolean hasMoreReviews = true;
+    private boolean loading = false;
 
     public static ReviewsFragment newInstance() {
         return new ReviewsFragment();
@@ -60,7 +64,7 @@ public class ReviewsFragment extends Fragment implements SwipeRefreshLayout.OnRe
                 if (event.getAction() == KeyEvent.ACTION_DOWN &&
                         (keyCode == KeyEvent.KEYCODE_ENTER)) {
                     title = editTextSearch.getText().toString();
-                    presenter.refreshReviews(title);
+                    refresh(title);
                     reviewsAdapter.clear();
                     return true;
                 }
@@ -101,13 +105,11 @@ public class ReviewsFragment extends Fragment implements SwipeRefreshLayout.OnRe
             }
         });
 
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_reviews);
+        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_reviews);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         reviewsAdapter = new ReviewsRecycleViewAdapter();
-        reviewsAdapter.setLoadPageListener(loadPageListener);
         recyclerView.setAdapter(reviewsAdapter);
-
-        presenter.loadReviews(0, editTextSearch.getText().toString(), "");
+        initPaginate();
         swipeRefreshLayout.setRefreshing(false);
         return view;
     }
@@ -119,38 +121,58 @@ public class ReviewsFragment extends Fragment implements SwipeRefreshLayout.OnRe
 
 
    @Override
-    public void setData(List<Review> reviews) {
+    public void setData(List<Review> reviews, boolean hasMoreReviews) {
+
         if (isRefresh) {
             reviewsAdapter.clear();
             isRefresh = false;
         }
+        this.hasMoreReviews = hasMoreReviews;
+        loading = false;
         reviewsAdapter.setData(reviews);
-//        reviewsAdapter.setLoaded();
         swipeRefreshLayout.setRefreshing(false);
-    }
-
-    LoadPageListener loadPageListener = new LoadPageListener() {
-        @Override
-        public void loadPage() {
-            presenter.loadReviews(reviewsAdapter.getItemCount(), editTextSearch.getText().toString(), "");
-            swipeRefreshLayout.setRefreshing(false);
-        }
-    };
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
     }
 
     @Override
     public void onRefresh() {
-        isRefresh = true;
-        presenter.refreshReviews(editTextSearch.getText().toString());
+        refresh(editTextSearch.getText().toString());
         swipeRefreshLayout.setRefreshing(false);
+    }
+
+    private void refresh(String title){
+        isRefresh = true;
+        presenter.refreshReviews(title);
     }
 
     @Override
     public void showMessageIsEmpty(){
         Toast.makeText(getContext(), getResources().getString(R.string.nothing_found),Toast.LENGTH_SHORT).show();
+    }
+
+    private void initPaginate(){
+        if (paginate != null)
+            return;
+        paginate = Paginate.with(recyclerView, this)
+                .setLoadingTriggerThreshold(2)
+                .addLoadingListItem(true)
+                .setLoadingListItemCreator(new ReviewsLoadingItemCreator())
+                .build();
+    }
+
+    @Override
+    public void onLoadMore() {
+        loading = true;
+        if (!isRefresh)
+            presenter.loadReviews(reviewsAdapter.getItemCount(), editTextSearch.getText().toString(), "");
+    }
+
+    @Override
+    public boolean isLoading() {
+        return loading;
+    }
+
+    @Override
+    public boolean hasLoadedAllItems() {
+        return !hasMoreReviews;
     }
 }
