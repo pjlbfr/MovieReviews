@@ -12,14 +12,11 @@ public interface NYTApi {
 
     String apiKey = "b4d57bcd057d49f1bb5419da52469f95";
 
+    @GET("reviews/search.json?api-key=" + apiKey)
+    Call<Reviews> loadReviews(@Query("offset") int offset, @Query("query") String title, @Query("publication-date") String publication_date);
+
     @GET("reviews/all.json?api-key=" + apiKey)
-    Call<Reviews> getReviews(@Query("offset") int offset);
-
-    @GET("reviews/search.json?api-key="+apiKey)
-    Call<Reviews> getSearchTitleReview(@Query("query") String title);
-
-    @GET("reviews/search.json?api-key="+apiKey)
-    Call<Reviews> getSearchPublicationDateReview(@Query("publication-date") String publication_date);
+    Call<Reviews> getReviews(@Query("offset") int offset, @Query("query") String title);
 
     @GET("critics/all.json?api-key="+apiKey)
     Call<Critics> getCritics();

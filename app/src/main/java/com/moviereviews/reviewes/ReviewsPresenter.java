@@ -1,6 +1,5 @@
 package com.moviereviews.reviewes;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.moviereviews.objectresponse.Review;
@@ -13,52 +12,59 @@ public class ReviewsPresenter implements ReviewsContract.Presenter {
 
     private ReviewsContract.View view;
     private final ReviewsRepository reviewsRepository;
+    private boolean hasMoreReviews = true;
 
-    public ReviewsPresenter(Context context, @NonNull ReviewsContract.View view, @NonNull ReviewsRepository reviewsRepository){
+    public ReviewsPresenter(@NonNull ReviewsContract.View view, @NonNull ReviewsRepository reviewsRepository) {
         this.view = view;
         view.setPresenter(this);
         this.reviewsRepository = reviewsRepository;
     }
 
     @Override
-    public void setToFirstPage() {
-        reviewsRepository.setOffsetZero();
+    public void loadReviews(int page, String title, String date) {
+        if (hasMoreReviews) {
+            reviewsRepository.loadReviews(page, title, date, new ReviewsDataSource.ReviewsCallback() {
+                @Override
+                public void onReviewsLoaded(List<Review> reviews, boolean hasMoreReviews) {
+                    view.setData(reviews);
+                    setHasMoreReviews(hasMoreReviews);
+                }
+
+                @Override
+                public void onDataNotAvailable() {
+                    // вывести во view
+                }
+            });
+        }
+    }
+
+    private void setHasMoreReviews(boolean hasMore){
+        this.hasMoreReviews = hasMore;
     }
 
     @Override
-    public void getReviews() {
-        reviewsRepository.getReviews(new ReviewsDataSource.ReviewsCallback() {
+    public void refreshReviews(String title) {
+        reviewsRepository.refreshReviews(title, new ReviewsDataSource.ReviewsCallback() {
             @Override
-            public void onReviewsLoaded(List<Review> reviews) {
-                view.setData(reviews);
+            public void onReviewsLoaded(List<Review> reviews, boolean hasMoreReviews) {
+                if (reviews.size() == 0){
+                    view.showMessageIsEmpty();
+                }else {
+                    view.setData(reviews);
+                    setHasMoreReviews(hasMoreReviews);
+                }
             }
 
             @Override
             public void onDataNotAvailable() {
-                // вывести во view ошибку
+                // вывести во view
             }
         });
     }
 
     @Override
-    public void setNotFirstLoad() {
-        reviewsRepository.setNotFirstLoad();
-    }
-
-
-    @Override
     public void setReviews(List<Review> reviews) {
         view.setData(reviews);
-    }
-
-    @Override
-    public void getSearchByTitle(String title) {
-
-    }
-
-    @Override
-    public void getSearchByPublicationDate(String date) {
-
     }
 
     @Override

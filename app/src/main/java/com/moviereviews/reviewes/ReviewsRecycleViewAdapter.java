@@ -21,7 +21,6 @@ public class ReviewsRecycleViewAdapter extends RecyclerView.Adapter<ReviewsRecyc
 
     private List<Review> reviews = new ArrayList<>();
     private boolean isLoading = false;
-    private boolean canLoadMore = true;
     private LoadPageListener loadPageListener;
 
     public void setLoadPageListener(LoadPageListener listener){
@@ -37,8 +36,10 @@ public class ReviewsRecycleViewAdapter extends RecyclerView.Adapter<ReviewsRecyc
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        if (position == getItemCount()-1 && canLoadMore && !isLoading)
+        if (position == getItemCount()-1 && !isLoading){
             loadPageListener.loadPage();
+            isLoading = true;
+        }
 
         MultimediaReview multimedia = reviews.get(position).getMultimedia();
         if (multimedia != null)
@@ -61,19 +62,13 @@ public class ReviewsRecycleViewAdapter extends RecyclerView.Adapter<ReviewsRecyc
 
     public void setData(List<Review> list){
         reviews.addAll(list);
+        isLoading = false;
         notifyDataSetChanged();
     }
+
     public void clear(){
         reviews.clear();
         notifyDataSetChanged();
-    }
-
-    public void setLoaded() {
-        isLoading = false;
-    }
-
-    public void setCanLoadMore(boolean canLoadMore) {
-        this.canLoadMore = canLoadMore;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{

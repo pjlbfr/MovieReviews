@@ -15,6 +15,10 @@ public class Reviews {
     @Expose
     private String copyright;
 
+    @SerializedName("has_more")
+    @Expose
+    private boolean has_more;
+
     @SerializedName("num_results")
     @Expose
     private Integer num_results;
@@ -37,6 +41,15 @@ public class Reviews {
 
     public void setCopyright(String copyright) {
         this.copyright = copyright;
+    }
+
+
+    public boolean isHas_more() {
+        return has_more;
+    }
+
+    public void setHas_more(boolean has_more) {
+        this.has_more = has_more;
     }
 
     public Integer getNum_results() {

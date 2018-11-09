@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,20 +15,27 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.app.DatePickerDialog;
+import android.widget.Toast;
 
 import com.moviereviews.R;
 import com.moviereviews.interfaces.LoadPageListener;
 import com.moviereviews.objectresponse.Review;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
-public class ReviewsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener,ReviewsContract.View{
+public class ReviewsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, ReviewsContract.View {
 
     private SwipeRefreshLayout swipeRefreshLayout;
     private ReviewsContract.Presenter presenter;
-    private ReviewsRecycleViewAdapter reviewsRecycleView;
+    private ReviewsRecycleViewAdapter reviewsAdapter;
     private TextView textViewDate;
     private EditText editTextSearch;
+    private boolean isRefresh = false;
+    private String title = "";
 
     public static ReviewsFragment newInstance() {
         return new ReviewsFragment();
@@ -51,40 +57,45 @@ public class ReviewsFragment extends Fragment implements SwipeRefreshLayout.OnRe
         editTextSearch.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View view, int keyCode, KeyEvent event) {
-                if(event.getAction() == KeyEvent.ACTION_DOWN &&
-                        (keyCode == KeyEvent.KEYCODE_ENTER))
-                {
-                    presenter.setToFirstPage();
-                    presenter.getSearchByTitle(editTextSearch.getText().toString());
-                    reviewsRecycleView.clear();
+                if (event.getAction() == KeyEvent.ACTION_DOWN &&
+                        (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    title = editTextSearch.getText().toString();
+                    presenter.refreshReviews(title);
+                    reviewsAdapter.clear();
                     return true;
                 }
                 return false;
             }
         });
+
         // обработка нажатия на textview поиска по дате публикации
         textViewDate = (TextView) view.findViewById(R.id.text_date);
+        final Calendar cal = Calendar.getInstance();
+        textViewDate.setText(getString(R.string.dateFormat, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH)+1, cal.get(Calendar.DAY_OF_MONTH)));
         textViewDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String date = textViewDate.getText().toString();
-                Integer year = Integer.parseInt(date.substring(0, 4));
-                Integer month = Integer.parseInt(date.substring(7,9))-1;
-                Integer day = Integer.parseInt(date.substring(12));
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy / MM / dd", Locale.ENGLISH);
+
+                try {
+                    cal.setTime(dateFormat.parse(date));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
                 if (getContext() != null) {
                     DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
                             new DatePickerDialog.OnDateSetListener() {
                                 @Override
                                 public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                                    String datePickerParams = year + " / "
-                                            + ((monthOfYear + 1) < 10 ? "0" + (monthOfYear + 1) : (monthOfYear + 1)) + " / "
-                                            + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth);
-                                    textViewDate.setText(datePickerParams);
-                                    presenter.setToFirstPage();
-                                    reviewsRecycleView.clear();
-                                    presenter.getSearchByPublicationDate(datePickerParams.trim().replace("/", "-"));
+
+                                    String dateFormat = getString(R.string.dateFormat, year, monthOfYear+1, dayOfMonth);
+                                    textViewDate.setText(dateFormat);
+                                 //   reviewsAdapter.clear();
+                               //     presenter.getSearchByPublicationDate(datePickerParams.trim().replace("/", "-"));
                                 }
-                            }, year, month, day);
+                            }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
                     datePickerDialog.show();
                 }
             }
@@ -92,13 +103,11 @@ public class ReviewsFragment extends Fragment implements SwipeRefreshLayout.OnRe
 
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_reviews);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        reviewsRecycleView = new ReviewsRecycleViewAdapter();
-        reviewsRecycleView.setCanLoadMore(true);
-        reviewsRecycleView.setLoadPageListener(loadPageListener);
-        recyclerView.setAdapter(reviewsRecycleView);
+        reviewsAdapter = new ReviewsRecycleViewAdapter();
+        reviewsAdapter.setLoadPageListener(loadPageListener);
+        recyclerView.setAdapter(reviewsAdapter);
 
-        presenter.setToFirstPage();
-        presenter.getReviews();
+        presenter.loadReviews(0, editTextSearch.getText().toString(), "");
         swipeRefreshLayout.setRefreshing(false);
         return view;
     }
@@ -108,38 +117,40 @@ public class ReviewsFragment extends Fragment implements SwipeRefreshLayout.OnRe
         this.presenter = presenter;
     }
 
-    @Override
+
+   @Override
     public void setData(List<Review> reviews) {
-        int pageSize = 20;
-        if (reviews.size() < pageSize)
-            reviewsRecycleView.setCanLoadMore(false);
-        reviewsRecycleView.setData(reviews);
+        if (isRefresh) {
+            reviewsAdapter.clear();
+            isRefresh = false;
+        }
+        reviewsAdapter.setData(reviews);
+//        reviewsAdapter.setLoaded();
         swipeRefreshLayout.setRefreshing(false);
     }
 
     LoadPageListener loadPageListener = new LoadPageListener() {
         @Override
         public void loadPage() {
-            presenter.getReviews();
-            reviewsRecycleView.setLoaded();
+            presenter.loadReviews(reviewsAdapter.getItemCount(), editTextSearch.getText().toString(), "");
             swipeRefreshLayout.setRefreshing(false);
         }
     };
 
     @Override
     public void onDestroyView() {
-        presenter.close();
-        Log.d("TAG-----", "ONDESTROYVIEW");
         super.onDestroyView();
-
     }
 
     @Override
     public void onRefresh() {
-        reviewsRecycleView.clear();
-        presenter.setToFirstPage();
-        presenter.setNotFirstLoad();
-        presenter.getReviews();
+        isRefresh = true;
+        presenter.refreshReviews(editTextSearch.getText().toString());
         swipeRefreshLayout.setRefreshing(false);
+    }
+
+    @Override
+    public void showMessageIsEmpty(){
+        Toast.makeText(getContext(), getResources().getString(R.string.nothing_found),Toast.LENGTH_SHORT).show();
     }
 }

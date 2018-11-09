@@ -13,12 +13,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ReviewsRemoteDataSource implements ReviewsDataSource{
+public class ReviewsRemoteDataSource implements ReviewsDataSource {
 
     private static ReviewsRemoteDataSource INSTANCE;
-
-    private int offset = 0;
-
 
     public static ReviewsRemoteDataSource getInstance() {
         if (INSTANCE == null)
@@ -27,60 +24,36 @@ public class ReviewsRemoteDataSource implements ReviewsDataSource{
     }
 
     @Override
-    public void setOffsetZero() {
-        offset = 0;
-    }
-
-    @Override
-    public void getReviews(@NonNull final ReviewsCallback callback) {
-        ApplicationMR.getApi().getReviews(offset).enqueue(new Callback<Reviews>() {
+    public void refreshReviews(String title, @NonNull final ReviewsCallback callback) {
+        ApplicationMR.getApi().getReviews(0, title).enqueue(new Callback<Reviews>() {
             @Override
             public void onResponse(@NonNull Call<Reviews> call, @NonNull Response<Reviews> response) {
                 if (response.body() != null) {
-                    callback.onReviewsLoaded(response.body().getReviews());
-                    offset+=20;
+                    callback.onReviewsLoaded(response.body().getReviews(), response.body().isHas_more());
+
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Reviews> call, @NonNull Throwable t) {
-              //  Toast.makeText(context, context.getResources().getText(R.string.error_message), Toast.LENGTH_LONG).show();
+                //  Toast.makeText(context, context.getResources().getText(R.string.error_message), Toast.LENGTH_LONG).show();
             }
         });
     }
 
     @Override
-    public void getSearchByTitle(@NonNull String title, @NonNull final SearchByTitleCallback callback) {
-        ApplicationMR.getApi().getSearchTitleReview(title).enqueue(new Callback<Reviews>() {
+    public void loadReviews(int page, String title, String date, @NonNull final ReviewsCallback callback) {
+        ApplicationMR.getApi().loadReviews(page, title, date).enqueue(new Callback<Reviews>() {
             @Override
             public void onResponse(@NonNull Call<Reviews> call, @NonNull Response<Reviews> response) {
                 if (response.body() != null) {
-                    callback.onReviewsLoaded(response.body().getReviews());
-                    offset+=20;
+                    callback.onReviewsLoaded(response.body().getReviews(), response.body().isHas_more());
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Reviews> call, @NonNull Throwable t) {
-             //   Toast.makeText(context, context.getResources().getText(R.string.error_message), Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    @Override
-    public void getSearchByPublicationDate(@NonNull String date, @NonNull final SearchByPublicationDateCallback callback) {
-        ApplicationMR.getApi().getSearchPublicationDateReview(date).enqueue(new Callback<Reviews>() {
-            @Override
-            public void onResponse(@NonNull Call<Reviews> call, @NonNull Response<Reviews> response) {
-                if (response.body() != null) {
-                    callback.onReviewsLoaded(response.body().getReviews());
-                    offset+=20;
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<Reviews> call, @NonNull Throwable t) {
-               // Toast.makeText(context, context.getResources().getText(R.string.error_message), Toast.LENGTH_LONG).show();
+                //  Toast.makeText(context, context.getResources().getText(R.string.error_message), Toast.LENGTH_LONG).show();
             }
         });
     }

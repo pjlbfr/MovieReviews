@@ -5,79 +5,41 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 
-import com.moviereviews.TypeDataSource;
 import com.moviereviews.objectresponse.Review;
 
-import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.List;
 
-public class ReviewsRepository implements ReviewsDataSource{
+public class ReviewsRepository implements ReviewsDataSource {
 
     private static ReviewsRepository INSTANCE = null;
 
     private final ReviewsDataSource reviewsRemoteDataSource;
     private final ReviewsDataSource reviewsLocalDataSource;
-    private TypeDataSource typeDataSource = TypeDataSource.Local;
-    private boolean firstLoad = true;
-    private List<Review> reviewList = new ArrayList<Review>();
+    private Context context;
 
-    private ReviewsRepository(@NonNull ReviewsDataSource reviewsRemoteDataSource,
-                              @NonNull ReviewsDataSource reviewsLocalDataSource){
-
+    private ReviewsRepository(Context context, @NonNull ReviewsDataSource reviewsRemoteDataSource,
+                              @NonNull ReviewsDataSource reviewsLocalDataSource) {
+        this.context = context;
         this.reviewsRemoteDataSource = reviewsRemoteDataSource;
         this.reviewsLocalDataSource = reviewsLocalDataSource;
     }
 
-    public static ReviewsRepository getInstance(ReviewsDataSource reviewsRemoteDataSource,
-                                                ReviewsDataSource reviewsLocalDataSource){
-
+    public static ReviewsRepository getInstance(Context context,
+                                                ReviewsDataSource reviewsRemoteDataSource,
+                                                ReviewsDataSource reviewsLocalDataSource) {
         if (INSTANCE == null)
-            INSTANCE = new ReviewsRepository(reviewsRemoteDataSource, reviewsLocalDataSource);
+            INSTANCE = new ReviewsRepository(context, reviewsRemoteDataSource, reviewsLocalDataSource);
         return INSTANCE;
     }
 
-
     @Override
-    public void setOffsetZero() {
-        reviewsRemoteDataSource.setOffsetZero();
-    }
-
-    @Override
-    public void getReviews(@NonNull final ReviewsCallback callback) {
-
-        if (typeDataSource == TypeDataSource.Local){
-            // проверить на наличие в реалме и вытащить данные
-            if (reviewsLocalDataSource.hasReviews()) {
-
-                reviewsLocalDataSource.getReviews(new ReviewsCallback() {
-                    @Override
-                    public void onReviewsLoaded(List<Review> reviews) {
-                        callback.onReviewsLoaded(reviews);
-                    }
-
-                    @Override
-                    public void onDataNotAvailable() {
-
-                    }
-                });
-            } else {
-                getReviewsFromRemoteDataSource(callback);
-            }
-            typeDataSource = TypeDataSource.Remote;
-        } else if (!firstLoad){
-            getReviewsFromRemoteDataSource(callback);
-        }
-    }
-
-
-    private void getReviewsFromRemoteDataSource(@NonNull final ReviewsCallback callback){
-        reviewsRemoteDataSource.getReviews(new ReviewsCallback() {
+    public void refreshReviews(String title, @NonNull final ReviewsCallback callback) {
+        reviewsRemoteDataSource.refreshReviews(title, new ReviewsCallback() {
             @Override
-            public void onReviewsLoaded(List<Review> reviews) {
-                reviewList.addAll(reviews);
-                refreshLocalDataSource(reviewList);
-                callback.onReviewsLoaded(reviews);
+            public void onReviewsLoaded(List<Review> reviews, boolean hasMoreReviews) {
+                reviewsLocalDataSource.deleteAllReviews();
+                reviewsLocalDataSource.saveReviews(reviews);
+                callback.onReviewsLoaded(reviews, hasMoreReviews);
             }
 
             @Override
@@ -87,31 +49,39 @@ public class ReviewsRepository implements ReviewsDataSource{
         });
     }
 
-    private void refreshLocalDataSource(List<Review> reviews){
-        reviewsLocalDataSource.deleteAllReviews();
-        reviewsLocalDataSource.saveReviews(reviews);
+    @Override
+    public void loadReviews(int page, String title, String date, @NonNull final ReviewsCallback callback) {
+        if (reviewsLocalDataSource.hasReviews() && page == 0) {
+            reviewsLocalDataSource.loadReviews(page, title, date, callback);
+        } else {
+            reviewsRemoteDataSource.loadReviews(page, title, date, new ReviewsCallback() {
+                @Override
+                public void onReviewsLoaded(List<Review> reviews, boolean hasMoreReviews) {
+                    reviewsLocalDataSource.deleteAllReviews();
+                    reviewsLocalDataSource.saveReviews(reviews);
+                    callback.onReviewsLoaded(reviews, hasMoreReviews);
+                }
 
+                @Override
+                public void onDataNotAvailable() {
+                    callback.onDataNotAvailable();
+                }
+            });
+        }
     }
 
-    public void setNotFirstLoad(){
-        firstLoad = false;
-    }
-
-
-  /*  public static boolean isOnline(Context context)
-    {
-         ConnectivityManager cm =
-                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-         NetworkInfo netInfo = cm.getActiveNetworkInfo();
-         if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+    private boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        if (netInfo != null && netInfo.isConnectedOrConnecting()) {
             return true;
-         }
-         return false;
+        }
+        return false;
     }
-    */
 
     @Override
-    public void close(){
+    public void close() {
         reviewsLocalDataSource.close();
     }
 
@@ -122,7 +92,7 @@ public class ReviewsRepository implements ReviewsDataSource{
     }
 
     @Override
-    public void saveReviews(List<Review> reviews) {
+        public void saveReviews(List<Review> reviews) {
 
     }
 
@@ -130,17 +100,4 @@ public class ReviewsRepository implements ReviewsDataSource{
     public boolean hasReviews() {
         return false;
     }
-
-
-    @Override
-    public void getSearchByTitle(@NonNull String title, @NonNull SearchByTitleCallback callback) {
-
-    }
-
-    @Override
-    public void getSearchByPublicationDate(@NonNull String date, @NonNull SearchByPublicationDateCallback callback) {
-
-    }
-
-
 }

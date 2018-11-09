@@ -9,15 +9,16 @@ public interface ReviewsContract {
 
     interface View extends BaseView<ReviewsContract.Presenter> {
         void setData(List<Review> reviews);
+        void showMessageIsEmpty();
     }
 
-    interface Presenter{
-        void setToFirstPage();
-        void getReviews();
-        void setNotFirstLoad();
+    interface Presenter {
+        void loadReviews(int page, String title, String date);
+
+        void refreshReviews(String title);
+
         void setReviews(List<Review> reviews);
-        void getSearchByTitle(String title);
-        void getSearchByPublicationDate(String date);
+
         void close();
     }
 }

@@ -26,23 +26,13 @@ public class ReviewsLocalDataSource implements ReviewsDataSource {
     }
 
     @Override
-    public void setOffsetZero() {
-        //
+    public void refreshReviews(String title, @NonNull ReviewsCallback callback) {
+
     }
 
     @Override
-    public void getReviews(@NonNull ReviewsCallback callback) {
-        callback.onReviewsLoaded(realmRequests.getReviews());
-    }
-
-    @Override
-    public void getSearchByTitle(@NonNull String title, @NonNull SearchByTitleCallback callback) {
-        // в локал не используется
-    }
-
-    @Override
-    public void getSearchByPublicationDate(@NonNull String date, @NonNull SearchByPublicationDateCallback callback) {
-        // в локал не используется
+    public void loadReviews(int page, String title, String date, @NonNull ReviewsCallback callback) {
+        callback.onReviewsLoaded(realmRequests.getReviews(), false);
     }
 
     @Override

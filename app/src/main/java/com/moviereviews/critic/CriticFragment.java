@@ -87,7 +87,6 @@ public class CriticFragment extends Fragment implements CriticContract.View, Swi
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_critic);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         reviewsRecycleView = new ReviewsRecycleViewAdapter();
-        reviewsRecycleView.setCanLoadMore(true);
         reviewsRecycleView.setLoadPageListener(loadPageListener);
         recyclerView.setAdapter(reviewsRecycleView);
         presenter.setOffsetZero();
@@ -99,8 +98,6 @@ public class CriticFragment extends Fragment implements CriticContract.View, Swi
 
     @Override
     public void setData(List<Review> reviews) {
-        if (reviews.size() < 20)
-            reviewsRecycleView.setCanLoadMore(false);
         reviewsRecycleView.setData(reviews);
         swipeRefreshLayout.setRefreshing(false);
     }
@@ -114,8 +111,8 @@ public class CriticFragment extends Fragment implements CriticContract.View, Swi
         @Override
         public void loadPage() {
             presenter.getReviews(critic.getDisplay_name());
-            reviewsRecycleView.setLoaded();
-            swipeRefreshLayout.setRefreshing(true);
+          //  reviewsRecycleView.setLoaded();
+            swipeRefreshLayout.setRefreshing(false);
         }
     };
 
