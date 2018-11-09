@@ -52,7 +52,7 @@ public class ReviewsFragment extends Fragment implements SwipeRefreshLayout.OnRe
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_reviews);
         swipeRefreshLayout.setOnRefreshListener(this);
 
-        // обработка введенных данных в textview поиска по имени
+        // обработка введенных данных в textview поиска по названию
         editTextSearch = (EditText) view.findViewById(R.id.text_search_reviews);
         editTextSearch.setOnKeyListener(new View.OnKeyListener() {
             @Override

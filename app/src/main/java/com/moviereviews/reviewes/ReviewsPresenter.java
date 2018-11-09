@@ -32,7 +32,7 @@ public class ReviewsPresenter implements ReviewsContract.Presenter {
 
                 @Override
                 public void onDataNotAvailable() {
-                    // вывести во view
+
                 }
             });
         }

@@ -33,7 +33,7 @@ public class ReviewsRecycleViewAdapter extends RecyclerView.Adapter<ReviewsRecyc
         CardView cardView = (CardView) LayoutInflater.from(parent.getContext()).inflate(R.layout.item_review, parent, false);
         return new ViewHolder(cardView);
     }
-
+//
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         if (position == getItemCount()-1 && !isLoading){
