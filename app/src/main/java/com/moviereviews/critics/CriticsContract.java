@@ -6,6 +6,8 @@ import com.moviereviews.objectresponse.Critic;
 
 import java.util.List;
 
+import io.reactivex.Observable;
+
 public interface CriticsContract {
 
     interface View extends BaseView<Presenter> {
@@ -13,13 +15,11 @@ public interface CriticsContract {
     }
 
     interface Presenter{
-        void getCritics();
         void setCritics(List<Critic> critics);
-        void getSearchByName(String name);
+        void getCriticsObservable(String name);
     }
 
     interface Model {
-        void getCritics();
-        void getSearchByName(String name);
+        Observable<List<Critic>> getCriticsObservable(String name);
     }
 }

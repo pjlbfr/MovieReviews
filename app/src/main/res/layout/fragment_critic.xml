@@ -1,122 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.SwipeRefreshLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/swipe_refresh_critic"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/colorGray"
+    android:orientation="vertical">
 
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/colorGray"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
-        <ScrollView
+        <android.support.v7.widget.CardView
+            android:id="@+id/card_critic"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            >
+            android:layout_margin="5dp">
 
-            <android.support.v7.widget.CardView
-                android:layout_height="wrap_content"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_marginTop="5dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:id="@+id/card_critic">
+                android:layout_height="match_parent"
+                android:background="@color/colorWhite"
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical"
                     android:background="@color/colorWhite"
-                    >
+                    android:orientation="horizontal">
+
+                    <android.support.v7.widget.CardView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginTop="10dp"
+                        card_view:cardCornerRadius="4dp">
+
+                        <ImageView
+                            android:id="@+id/image_critic_in_activity"
+                            android:layout_width="150dp"
+                            android:layout_height="150dp"
+                            android:scaleType="centerCrop" />
+
+                    </android.support.v7.widget.CardView>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:orientation="horizontal"
-                        android:background="@color/colorWhite"
-                        >
+                        android:orientation="vertical">
 
-                        <android.support.v7.widget.CardView
-                            android:layout_height="wrap_content"
+                        <TextView
+                            android:id="@+id/text_display_name_critic"
                             android:layout_width="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginTop="10dp"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginRight="10dp"
-                            android:layout_marginBottom="10dp"
-                            card_view:cardCornerRadius="4dp"
-                            >
-
-                            <ImageView
-                                android:layout_width="150dp"
-                                android:layout_height="150dp"
-                                android:scaleType="centerCrop"
-                                android:id="@+id/image_critic_in_activity"/>
-
-                        </android.support.v7.widget.CardView>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:orientation="vertical"
-                            >
+                            android:layout_gravity="center_vertical"
+                            android:layout_weight="0.2"
+                            android:gravity="center_vertical"
+                            android:textSize="22sp"
+                            android:textStyle="bold" />
 
-                            <TextView
-                                android:id="@+id/text_display_name_critic"
-                                android:layout_width="wrap_content"
-                                android:layout_height="match_parent"
-                                android:layout_weight="0.2"
-                                android:textSize="22sp"
-                                android:textStyle="bold"
-                                android:gravity="center_vertical"
-                                android:layout_gravity="center_vertical"
-                                />
-
-                            <TextView
-                                android:id="@+id/text_status_critic"
-                                android:layout_width="wrap_content"
-                                android:layout_height="match_parent"
-                                android:layout_marginBottom="10dp"
-                                android:paddingLeft="20dp"
-                                android:paddingRight="20dp"
-                                android:layout_weight="0.8"
-                                android:textSize="16sp"
-                                android:textColor="@color/colorWhite"
-                                android:background="@drawable/tv_background_status"
-                                />
-
-                        </LinearLayout>
+                        <TextView
+                            android:id="@+id/text_status_critic"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginBottom="10dp"
+                            android:layout_weight="0.8"
+                            android:background="@drawable/tv_background_status"
+                            android:paddingLeft="20dp"
+                            android:paddingRight="20dp"
+                            android:textColor="@color/colorWhite"
+                            android:textSize="16sp" />
 
                     </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/text_bio_critic"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="5dp"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginBottom="5dp"
-                        android:padding="5dp"
-                        android:background="@color/colorWhite"
-                        android:textSize="12sp"
-                        />
-
                 </LinearLayout>
 
-            </android.support.v7.widget.CardView>
+                <TextView
+                    android:id="@+id/text_bio_critic"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:background="@color/colorWhite"
+                    android:padding="5dp"
+                    android:textSize="12sp" />
 
-        </ScrollView>
+            </LinearLayout>
 
-        <android.support.v7.widget.RecyclerView
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/recycler_critic"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            />
+        </android.support.v7.widget.CardView>
 
-    </LinearLayout>
-</android.support.v4.widget.SwipeRefreshLayout>
+    </ScrollView>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_critic"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+
+</LinearLayout>

@@ -29,8 +29,7 @@ public class TabsPagerFragmentAdapter extends FragmentPagerAdapter {
             case 0:
                 ReviewsFragment fragmentReviews = ReviewsFragment.newInstance();
                 new ReviewsPresenter(fragmentReviews,
-                                     ReviewsRepository.getInstance(context,
-                                                                   ReviewsRemoteDataSource.getInstance(),
+                                     ReviewsRepository.getInstance(ReviewsRemoteDataSource.getInstance(),
                                                                    ReviewsLocalDataSource.getInstance(context)));
                 return fragmentReviews;
              // вкладка критики

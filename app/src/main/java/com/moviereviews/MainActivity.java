@@ -12,6 +12,8 @@ import android.support.v7.widget.AppCompatTextView;
 import android.view.View;
 import android.widget.TextView;
 
+import butterknife.ButterKnife;
+
 public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener {
 
     private TextView tvReviews;
@@ -21,6 +23,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
             getSupportActionBar().setCustomView(R.layout.actionbar_title);

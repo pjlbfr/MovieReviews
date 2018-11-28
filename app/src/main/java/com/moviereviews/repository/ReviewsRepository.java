@@ -1,13 +1,17 @@
 package com.moviereviews.repository;
 
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 
 import com.moviereviews.objectresponse.Review;
+import com.moviereviews.objectresponse.ReviewsResult;
 
 import java.util.List;
+
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Function;
 
 public class ReviewsRepository implements ReviewsDataSource {
 
@@ -15,69 +19,18 @@ public class ReviewsRepository implements ReviewsDataSource {
 
     private final ReviewsDataSource reviewsRemoteDataSource;
     private final ReviewsDataSource reviewsLocalDataSource;
-    private Context context;
 
-    private ReviewsRepository(Context context, @NonNull ReviewsDataSource reviewsRemoteDataSource,
+    private ReviewsRepository(@NonNull ReviewsDataSource reviewsRemoteDataSource,
                               @NonNull ReviewsDataSource reviewsLocalDataSource) {
-        this.context = context;
         this.reviewsRemoteDataSource = reviewsRemoteDataSource;
         this.reviewsLocalDataSource = reviewsLocalDataSource;
     }
 
-    public static ReviewsRepository getInstance(Context context,
-                                                ReviewsDataSource reviewsRemoteDataSource,
+    public static ReviewsRepository getInstance(ReviewsDataSource reviewsRemoteDataSource,
                                                 ReviewsDataSource reviewsLocalDataSource) {
         if (INSTANCE == null)
-            INSTANCE = new ReviewsRepository(context, reviewsRemoteDataSource, reviewsLocalDataSource);
+            INSTANCE = new ReviewsRepository(reviewsRemoteDataSource, reviewsLocalDataSource);
         return INSTANCE;
-    }
-
-    @Override
-    public void refreshReviews(String title, @NonNull final ReviewsCallback callback) {
-        reviewsRemoteDataSource.refreshReviews(title, new ReviewsCallback() {
-            @Override
-            public void onReviewsLoaded(List<Review> reviews, boolean hasMoreReviews) {
-                reviewsLocalDataSource.deleteAllReviews();
-                reviewsLocalDataSource.saveReviews(reviews);
-                callback.onReviewsLoaded(reviews, hasMoreReviews);
-            }
-
-            @Override
-            public void onDataNotAvailable() {
-                callback.onDataNotAvailable();
-            }
-        });
-    }
-
-    @Override
-    public void loadReviews(int page, String title, String date, @NonNull final ReviewsCallback callback) {
-        if (reviewsLocalDataSource.hasReviews() && page == 0) {
-            reviewsLocalDataSource.loadReviews(page, title, date, callback);
-        } else {
-            reviewsRemoteDataSource.loadReviews(page, title, date, new ReviewsCallback() {
-                @Override
-                public void onReviewsLoaded(List<Review> reviews, boolean hasMoreReviews) {
-                    reviewsLocalDataSource.deleteAllReviews();
-                    reviewsLocalDataSource.saveReviews(reviews);
-                    callback.onReviewsLoaded(reviews, hasMoreReviews);
-                }
-
-                @Override
-                public void onDataNotAvailable() {
-                    callback.onDataNotAvailable();
-                }
-            });
-        }
-    }
-
-    private boolean isOnline() {
-        ConnectivityManager cm =
-                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        if (netInfo != null && netInfo.isConnectedOrConnecting()) {
-            return true;
-        }
-        return false;
     }
 
     @Override
@@ -92,12 +45,40 @@ public class ReviewsRepository implements ReviewsDataSource {
     }
 
     @Override
-        public void saveReviews(List<Review> reviews) {
+    public Observable<ReviewsResult> saveReviews(ReviewsResult result) {
+        return null;
+    }
 
+    @Override
+    public Observable<ReviewsResult> loadCriticReviewsObservable(int page, String name) {
+        return reviewsRemoteDataSource.loadCriticReviewsObservable(page, name);
     }
 
     @Override
     public boolean hasReviews() {
         return false;
+    }
+
+    @Override
+    public Observable<ReviewsResult> refreshReviewsObservable(String title, String date) {
+        return reviewsRemoteDataSource.loadReviewsObservable(0, title, date)
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .flatMap((Function<ReviewsResult, ObservableSource<ReviewsResult>>) reviewsResult -> {
+                    reviewsLocalDataSource.deleteAllReviews();
+                    return reviewsLocalDataSource.saveReviews(reviewsResult);
+                });
+    }
+
+    @Override
+    public Observable<ReviewsResult> loadReviewsObservable(int page, String title, String date) {
+        if (reviewsLocalDataSource.hasReviews() && page == 0) {
+            return reviewsLocalDataSource.loadReviewsObservable(page, title, date);
+        } else {
+            return reviewsRemoteDataSource.loadReviewsObservable(page, title, date)
+                    .subscribeOn(AndroidSchedulers.mainThread())
+                    .flatMap((Function<ReviewsResult, ObservableSource<ReviewsResult>>)
+                            reviewsLocalDataSource::saveReviews
+                    );
+        }
     }
 }

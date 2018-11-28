@@ -5,19 +5,22 @@ import com.moviereviews.objectresponse.Review;
 
 import java.util.List;
 
+import io.reactivex.Observable;
+
 public interface ReviewsContract {
 
     interface View extends BaseView<ReviewsContract.Presenter> {
+
         void setData(List<Review> reviews, boolean hasMoreReviews);
+
         void showMessageIsEmpty();
     }
 
     interface Presenter {
-        void loadReviews(int page, String title, String date);
 
-        void refreshReviews(String title);
+        void refreshReviewsObservable(String title, String date);
 
-     //   void setReviews(List<Review> reviews);
+        void loadReviewsObservable(int page, String title, String date);
 
         void close();
     }

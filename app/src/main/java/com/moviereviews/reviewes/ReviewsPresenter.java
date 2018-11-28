@@ -1,18 +1,18 @@
 package com.moviereviews.reviewes;
 
+import android.annotation.SuppressLint;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
-import com.moviereviews.objectresponse.Review;
-import com.moviereviews.repository.ReviewsDataSource;
 import com.moviereviews.repository.ReviewsRepository;
 
-import java.util.List;
 
 public class ReviewsPresenter implements ReviewsContract.Presenter {
 
+    public static final String TAG = ReviewsPresenter.class.getSimpleName();
+
     private ReviewsContract.View view;
     private final ReviewsRepository reviewsRepository;
-    private boolean hasMoreReviews = true;
 
     public ReviewsPresenter(@NonNull ReviewsContract.View view, @NonNull ReviewsRepository reviewsRepository) {
         this.view = view;
@@ -20,52 +20,26 @@ public class ReviewsPresenter implements ReviewsContract.Presenter {
         this.reviewsRepository = reviewsRepository;
     }
 
+    @SuppressLint("CheckResult")
     @Override
-    public void loadReviews(int page, String title, String date) {
-      //  if (hasMoreReviews) {
-            reviewsRepository.loadReviews(page, title, date, new ReviewsDataSource.ReviewsCallback() {
-                @Override
-                public void onReviewsLoaded(List<Review> reviews, boolean hasMoreReviews) {
-                    view.setData(reviews, hasMoreReviews);
-                    setHasMoreReviews(hasMoreReviews);
-                }
+    public void refreshReviewsObservable(String title, String date) {
+        reviewsRepository.refreshReviewsObservable(title, date)
+        .subscribe(reviewsResult -> view.setData(reviewsResult.getReviews(), reviewsResult.isHas_more()),
+                error-> Log.d(TAG, "refreshReviewsObservable: ")
 
-                @Override
-                public void onDataNotAvailable() {
-
-                }
-            });
-        //}
+        );
     }
 
-    private void setHasMoreReviews(boolean hasMore){
-        this.hasMoreReviews = hasMore;
-    }
-
+    @SuppressLint("CheckResult")
     @Override
-    public void refreshReviews(String title) {
-        reviewsRepository.refreshReviews(title, new ReviewsDataSource.ReviewsCallback() {
-            @Override
-            public void onReviewsLoaded(List<Review> reviews, boolean hasMoreReviews) {
-                if (reviews.size() == 0){
-                    view.showMessageIsEmpty();
-                }else {
-                    view.setData(reviews, hasMoreReviews);
-                    setHasMoreReviews(hasMoreReviews);
-                }
-            }
-
-            @Override
-            public void onDataNotAvailable() {
-                // вывести во view
-            }
-        });
+    public void loadReviewsObservable(int page, String title, String date) {
+        reviewsRepository.loadReviewsObservable(page, title, date)
+                .subscribe(reviewsResults -> view.setData(reviewsResults.getReviews(), reviewsResults.isHas_more()),
+                        error -> {
+                            Log.d(TAG, "loadReviewsObserv: "+ error.getMessage());
+                        }
+                );
     }
-
-//    @Override
-//    public void setReviews(List<Review> reviews) {
-//        view.setData(reviews, hasMoreReviews);
-//    }
 
     @Override
     public void close() {

@@ -1,35 +1,30 @@
 package com.moviereviews.critic;
 
-import android.content.Context;
+import android.annotation.SuppressLint;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
-import com.moviereviews.objectresponse.Review;
+import com.moviereviews.repository.ReviewsRepository;
 
-import java.util.List;
+public class CriticPresenter implements CriticContract.Presenter {
 
-public class CriticPresenter implements CriticContract.Presenter{
+    public static final String TAG = CriticPresenter.class.getSimpleName();
 
     private CriticContract.View view;
-    private CriticContract.Model model;
+    private ReviewsRepository reviewsRepository;
 
-    public CriticPresenter(Context context, @NonNull CriticContract.View view) {
+    public CriticPresenter(@NonNull CriticContract.View view, @NonNull ReviewsRepository reviewsRepository) {
         this.view = view;
-        model = new CriticModel(context, this);
         view.setPresenter(this);
+        this.reviewsRepository = reviewsRepository;
     }
 
+    @SuppressLint("CheckResult")
     @Override
-    public void setOffsetZero() {
-        model.setOffsetZero();
-    }
-
-    @Override
-    public void getReviews(String name) {
-        model.getReviews(name);
-    }
-
-    @Override
-    public void setReviews(List<Review> reviews) {
-        view.setData(reviews);
+    public void loadReviewsObservable(int page, String name) {
+        reviewsRepository.loadCriticReviewsObservable(page, name)
+                .subscribe(reviewsResult -> view.setData(reviewsResult.getReviews(), reviewsResult.isHas_more()),
+                        error -> Log.d(TAG, "refreshReviewsObservable: "+ error.getMessage())
+                );
     }
 }

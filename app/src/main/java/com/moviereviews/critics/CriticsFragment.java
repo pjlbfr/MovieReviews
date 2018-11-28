@@ -8,7 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.KeyEvent;
+import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,12 +21,22 @@ import com.moviereviews.objectresponse.Critic;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnTextChanged;
+
+import static butterknife.OnTextChanged.Callback.AFTER_TEXT_CHANGED;
+
 public class CriticsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, CriticsContract.View{
 
-    private SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R.id.swipe_refresh_critics)
+    SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R.id.text_search_critic)
+    EditText editTextSearch;
+    @BindView(R.id.recycler_critics)
+    RecyclerView recyclerView;
+
     private CriticsContract.Presenter presenter;
-    private CriticsRecycleViewAdapter criticsRecycleView;
-    private EditText editTextSearch;
 
     public static CriticsFragment newInstance() {
         return new CriticsFragment();
@@ -40,32 +50,11 @@ public class CriticsFragment extends Fragment implements SwipeRefreshLayout.OnRe
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_critics, null);
-        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_critics);
+        ButterKnife.bind(this, view);
+
         swipeRefreshLayout.setOnRefreshListener(this);
-        // обработка в edittext поиска по имени
-        editTextSearch = (EditText) view.findViewById(R.id.text_search_critic);
-        editTextSearch.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View view, int keyCode, KeyEvent event) {
-                if(event.getAction() == KeyEvent.ACTION_DOWN &&
-                        (keyCode == KeyEvent.KEYCODE_ENTER))
-                {
-                    if (!editTextSearch.getText().toString().isEmpty())
-                        presenter.getSearchByName(editTextSearch.getText().toString());
-                    else
-                        presenter.getCritics();
-                    criticsRecycleView.clear();
-                    return true;
-                }
-                return false;
-            }
-        });
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_critics);
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        criticsRecycleView = new CriticsRecycleViewAdapter();
-        criticsRecycleView.setOnCriticCardClickListener(onCriticCardClickListener);
-        recyclerView.setAdapter(criticsRecycleView);
-        presenter.getCritics();
+
+        presenter.getCriticsObservable(getString(R.string.all_critics));
         return view;
     }
 
@@ -76,22 +65,35 @@ public class CriticsFragment extends Fragment implements SwipeRefreshLayout.OnRe
 
     @Override
     public void setData(List<Critic> critics) {
-        criticsRecycleView.setData(critics);
+        initRecycleView(critics);
+    }
+
+    private void initRecycleView(List<Critic> critics){
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        CriticsRecycleViewAdapter criticsRecycleView = new CriticsRecycleViewAdapter(critics, onCriticCardClickListener);
+        recyclerView.setAdapter(criticsRecycleView);
     }
 
     @Override
     public void onRefresh() {
-        criticsRecycleView.clear();
-        presenter.getCritics();
+        editTextSearch.setText("");
         swipeRefreshLayout.setRefreshing(false);
     }
 
-    OnCriticCardClickListener onCriticCardClickListener = new OnCriticCardClickListener() {
-        @Override
-        public void onClick(Critic critic) {
-            Intent intent = new Intent(getContext(), CriticActivity.class);
-            intent.putExtra(Critic.class.getSimpleName(), critic);
-            getContext().startActivity(intent);
+    // обработка в edittext поиска по имени
+    @OnTextChanged(value = R.id.text_search_critic, callback = AFTER_TEXT_CHANGED)
+    void onTextChanged(Editable name) {
+        if (!name.toString().isEmpty()){
+            presenter.getCriticsObservable(name.toString());
+        } else {
+            presenter.getCriticsObservable(getString(R.string.all_critics));
         }
+    }
+
+    OnCriticCardClickListener onCriticCardClickListener = critic -> {
+        Intent intent = new Intent(getContext(), CriticActivity.class);
+        intent.putExtra(CriticActivity.TAG, critic);
+        if (getContext() != null)
+            getContext().startActivity(intent);
     };
 }

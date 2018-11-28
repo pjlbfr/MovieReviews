@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,12 +17,16 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class CriticsRecycleViewAdapter extends RecyclerView.Adapter<CriticsRecycleViewAdapter.ViewHolder> {
 
-    private List<Critic> critics = new ArrayList<>();
+    private List<Critic> critics;
     private OnCriticCardClickListener onCriticCardClickListener;
 
-    public void setOnCriticCardClickListener(OnCriticCardClickListener listener){
+    public CriticsRecycleViewAdapter(List<Critic> critics, OnCriticCardClickListener listener) {
+        this.critics = new ArrayList<>(critics);
         this.onCriticCardClickListener = listener;
     }
 
@@ -36,7 +39,7 @@ public class CriticsRecycleViewAdapter extends RecyclerView.Adapter<CriticsRecyc
 
     @Override
     public void onBindViewHolder(@NonNull CriticsRecycleViewAdapter.ViewHolder holder, int position) {
-        final Critic critic = critics.get(position);
+        Critic critic = critics.get(position);
         // подгрузка фотографии критика, если есть ссылка на нее,
         // иначе устанавливается critic_default.png
         final MultimediaCritic multimedia = critic.getMultimedia();
@@ -48,7 +51,6 @@ public class CriticsRecycleViewAdapter extends RecyclerView.Adapter<CriticsRecyc
             holder.imageCritic.setImageResource(R.drawable.critic_default);
         holder.displayName.setText(critic.getDisplay_name());
 
-
     }
 
     @Override
@@ -56,34 +58,21 @@ public class CriticsRecycleViewAdapter extends RecyclerView.Adapter<CriticsRecyc
         return critics.size();
     }
 
-    public void setData(List<Critic> list){
-        critics.addAll(list);
-        notifyDataSetChanged();
-    }
-
-    public void clear(){
-        critics.clear();
-        notifyDataSetChanged();
-    }
-
     public class ViewHolder extends RecyclerView.ViewHolder{
 
-        private TextView displayName;
-        private ImageView imageCritic;
-        private CardView cardView;
+        @BindView(R.id.tv_name_critic)
+        TextView displayName;
+        @BindView(R.id.image_critic)
+        ImageView imageCritic;
+
+       private  CardView cardView;
 
         public ViewHolder(CardView itemView) {
             super(itemView);
+            ButterKnife.bind(this, itemView);
             cardView = itemView;
-            imageCritic = (ImageView) cardView.findViewById(R.id.image_critic);
-            displayName= (TextView) cardView.findViewById(R.id.tv_name_critic);
             // обработка нажатия на карточку критика
-            cardView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    onCriticCardClickListener.onClick(critics.get(getAdapterPosition()));
-                }
-            });
+            cardView.setOnClickListener(view -> onCriticCardClickListener.onClick(critics.get(getAdapterPosition())));
         }
     }
 }

@@ -4,10 +4,13 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.moviereviews.objectresponse.Review;
+import com.moviereviews.objectresponse.ReviewsResult;
 import com.moviereviews.realm.RealmRequests;
 import com.moviereviews.repository.ReviewsDataSource;
 
 import java.util.List;
+
+import io.reactivex.Observable;
 
 public class ReviewsLocalDataSource implements ReviewsDataSource {
 
@@ -26,23 +29,18 @@ public class ReviewsLocalDataSource implements ReviewsDataSource {
     }
 
     @Override
-    public void refreshReviews(String title, @NonNull ReviewsCallback callback) {
-
-    }
-
-    @Override
-    public void loadReviews(int page, String title, String date, @NonNull ReviewsCallback callback) {
-        callback.onReviewsLoaded(realmRequests.getReviews(), false);
-    }
-
-    @Override
     public void deleteAllReviews() {
         realmRequests.deleteAllReviews();
     }
 
     @Override
-    public void saveReviews(List<Review> reviews) {
-        realmRequests.insertReviews(reviews);
+    public Observable<ReviewsResult> saveReviews(ReviewsResult result) {
+        return realmRequests.insertReviews(result);
+    }
+
+    @Override
+    public Observable<ReviewsResult> loadCriticReviewsObservable(int page, String name) {
+        return null;
     }
 
     @Override
@@ -50,6 +48,15 @@ public class ReviewsLocalDataSource implements ReviewsDataSource {
         return realmRequests.hasReviews();
     }
 
+    @Override
+    public Observable<ReviewsResult> refreshReviewsObservable(String title, String date) {
+        return null;
+    }
+
+    @Override
+    public Observable<ReviewsResult> loadReviewsObservable(int page, String title, String date) {
+        return realmRequests.getReviewsObservable();
+    }
 
     @Override
     public void close(){

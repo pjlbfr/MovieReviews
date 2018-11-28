@@ -4,10 +4,12 @@ import android.content.Context;
 
 import com.moviereviews.objectresponse.Critic;
 import com.moviereviews.objectresponse.Review;
+import com.moviereviews.objectresponse.ReviewsResult;
 
 import java.util.List;
 import java.util.UUID;
 
+import io.reactivex.Observable;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
@@ -24,21 +26,28 @@ public class RealmRequests {
         return realm.where(Review.class).findAll();
     }
 
-    public List<Review> getReviewsByTitle(String title){
-        return realm.where(Review.class).equalTo("title", title).findAll();
+    public Observable<ReviewsResult> getReviewsObservable(){
+        return Observable.fromCallable(()-> new ReviewsResult(false, realm.where(Review.class).findAll()));
     }
 
-    public List<Review> getReviewsByPublicationDate(String date){
-        return realm.where(Review.class).equalTo("publication_date", date).findAll();
-    }
+//    public List<Review> getReviewsByTitle(String title){
+//        return realm.where(Review.class).equalTo("title", title).findAll();
+//    }
+//
+//    public List<Review> getReviewsByPublicationDate(String date){
+//        return realm.where(Review.class).equalTo("publication_date", date).findAll();
+//    }
 
-    public void insertReviews(List<Review> reviews){
+    public Observable<ReviewsResult> insertReviews(ReviewsResult result){
+        return Observable.fromCallable(() -> {
         realm.beginTransaction();
-        for (Review review : reviews){
+        for (Review review : result.getReviews()){
             review.setId(UUID.randomUUID().toString());
             realm.copyToRealm(review);
         }
         realm.commitTransaction();
+        return result;
+        });
     }
 
     public void deleteAllReviews(){

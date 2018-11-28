@@ -16,9 +16,16 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class ReviewsRecycleViewAdapter extends RecyclerView.Adapter<ReviewsRecycleViewAdapter.ViewHolder>{
 
-    private List<Review> reviews = new ArrayList<>();
+    private List<Review> reviews;
+
+    public ReviewsRecycleViewAdapter(List<Review> reviews) {
+        this.reviews = reviews;
+    }
 
     @NonNull
     @Override
@@ -53,28 +60,25 @@ public class ReviewsRecycleViewAdapter extends RecyclerView.Adapter<ReviewsRecyc
         notifyDataSetChanged();
     }
 
-    public void clear(){
-        reviews.clear();
-        notifyDataSetChanged();
-    }
-
     public static class ViewHolder extends RecyclerView.ViewHolder{
 
-        private ImageView imageReview;
-        private TextView displayTitle;
-        private TextView summaryShort;
-        private TextView byline;
-        private TextView dateUpdated;
-        private CardView cardView;
+        @BindView(R.id.image_review)
+        ImageView imageReview;
+        @BindView(R.id.text_display_title_review)
+        TextView displayTitle;
+        @BindView(R.id.text_summary_short_review)
+        TextView summaryShort;
+        @BindView(R.id.text_byline_review)
+        TextView byline;
+        @BindView(R.id.text_date_updated_review)
+        TextView dateUpdated;
+        @BindView(R.id.card_view_reviews)
+        CardView cardView;
 
         public ViewHolder(CardView itemView) {
             super(itemView);
+            ButterKnife.bind(this, itemView);
             cardView = itemView;
-            imageReview = (ImageView) cardView.findViewById(R.id.image_review);
-            displayTitle = (TextView) cardView.findViewById(R.id.text_display_title_review);
-            summaryShort = (TextView) cardView.findViewById(R.id.text_summary_short_review);
-            byline = (TextView) cardView.findViewById(R.id.text_byline_review);
-            dateUpdated = (TextView) cardView.findViewById(R.id.text_date_updated_review);
         }
     }
 }

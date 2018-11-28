@@ -7,6 +7,7 @@ import com.moviereviews.interfaces.NYTApi;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApplicationMR extends Application {
@@ -25,6 +26,7 @@ public class ApplicationMR extends Application {
         retrofit = new Retrofit.Builder()
                 .baseUrl("https://api.nytimes.com/svc/movies/v2/")
                 .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .client(client)
                 .build();
         sNYTApi = retrofit.create(NYTApi.class);

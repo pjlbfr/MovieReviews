@@ -1,17 +1,15 @@
 package com.moviereviews.repository.remote;
 
-import android.support.annotation.NonNull;
-
-import com.moviereviews.ApplicationMR;
-import com.moviereviews.objectresponse.Review;
+import com.moviereviews.NetworkClient;
 import com.moviereviews.objectresponse.Reviews;
+import com.moviereviews.objectresponse.ReviewsResult;
 import com.moviereviews.repository.ReviewsDataSource;
 
-import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
 public class ReviewsRemoteDataSource implements ReviewsDataSource {
 
@@ -24,53 +22,42 @@ public class ReviewsRemoteDataSource implements ReviewsDataSource {
     }
 
     @Override
-    public void refreshReviews(String title, @NonNull final ReviewsCallback callback) {
-        ApplicationMR.getApi().getReviews(0, title).enqueue(new Callback<Reviews>() {
-            @Override
-            public void onResponse(@NonNull Call<Reviews> call, @NonNull Response<Reviews> response) {
-                if (response.body() != null) {
-                    callback.onReviewsLoaded(response.body().getReviews(), response.body().isHas_more());
-
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<Reviews> call, @NonNull Throwable t) {
-                //  Toast.makeText(context, context.getResources().getText(R.string.error_message), Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    @Override
-    public void loadReviews(int page, String title, String date, @NonNull final ReviewsCallback callback) {
-        ApplicationMR.getApi().loadReviews(page, title, date).enqueue(new Callback<Reviews>() {
-            @Override
-            public void onResponse(@NonNull Call<Reviews> call, @NonNull Response<Reviews> response) {
-                if (response.body() != null) {
-                    callback.onReviewsLoaded(response.body().getReviews(), response.body().isHas_more());
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<Reviews> call, @NonNull Throwable t) {
-                //  Toast.makeText(context, context.getResources().getText(R.string.error_message), Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    @Override
     public void deleteAllReviews() {
         // не используется
     }
 
     @Override
-    public void saveReviews(List<Review> reviews) {
-        // не используется
+    public Observable<ReviewsResult> saveReviews(ReviewsResult result) {
+        return null;
     }
+
+    @Override
+    public Observable<ReviewsResult> loadCriticReviewsObservable(int page, String name) {
+        return NetworkClient.getRetrofit().getCriticReviews(page, name)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMap((Function<Reviews, ObservableSource<ReviewsResult>>)
+                        reviews -> Observable.just(new ReviewsResult(reviews.isHas_more(), reviews.getReviews())));
+    }
+
 
     @Override
     public boolean hasReviews() {
         return true;
+    }
+
+    @Override
+    public Observable<ReviewsResult> refreshReviewsObservable(String title, String date) {
+        return null;
+    }
+
+    @Override
+    public Observable<ReviewsResult> loadReviewsObservable(int page, String title, String date) {
+        return NetworkClient.getRetrofit().getReviewsObservable(page, title, date)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMap((Function<Reviews, ObservableSource<ReviewsResult>>)
+                        reviews -> Observable.just(new ReviewsResult(reviews.isHas_more(), reviews.getReviews())));
     }
 
     @Override

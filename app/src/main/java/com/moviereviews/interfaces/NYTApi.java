@@ -3,6 +3,7 @@ package com.moviereviews.interfaces;
 import com.moviereviews.objectresponse.Critics;
 import com.moviereviews.objectresponse.Reviews;
 
+import io.reactivex.Observable;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
@@ -13,17 +14,12 @@ public interface NYTApi {
     String apiKey = "b4d57bcd057d49f1bb5419da52469f95";
 
     @GET("reviews/search.json?api-key=" + apiKey)
-    Call<Reviews> loadReviews(@Query("offset") int offset, @Query("query") String title, @Query("publication-date") String publication_date);
-
-    @GET("reviews/all.json?api-key=" + apiKey)
-    Call<Reviews> getReviews(@Query("offset") int offset, @Query("query") String title);
-
-    @GET("critics/all.json?api-key="+apiKey)
-    Call<Critics> getCritics();
+    Observable<Reviews> getReviewsObservable(@Query("offset") int offset, @Query("query") String title, @Query("publication-date") String publication_date);
 
     @GET("critics/{name}.json?api-key="+apiKey)
-    Call<Critics> getSearchNameCritic(@Path("name") String name);
+    Observable<Critics> getCritics(@Path("name") String name);
+
 
     @GET("reviews/search.json?api-key="+apiKey)
-    Call<Reviews> getSearchCriticReviews(@Query("reviewer") String reviewer, @Query("offset") int offset);
+    Observable<Reviews> getCriticReviews( @Query("offset") int offset, @Query("reviewer") String reviewer);
 }

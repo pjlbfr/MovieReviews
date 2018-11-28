@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,22 +22,38 @@ import com.moviereviews.reviewes.ReviewsRecycleViewAdapter;
 import com.paginate.Paginate;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class CriticFragment extends Fragment implements CriticContract.View, SwipeRefreshLayout.OnRefreshListener, Paginate.Callbacks{
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
+public class CriticFragment extends Fragment implements CriticContract.View, Paginate.Callbacks {
 
     public static final String TAG = CriticFragment.class.getSimpleName();
+
+    @BindView(R.id.text_display_name_critic)
+    TextView nameCritic;
+    @BindView(R.id.text_status_critic)
+    TextView status;
+    @BindView(R.id.text_bio_critic)
+    TextView bio;
+    @BindView(R.id.card_critic)
+    CardView cardView;
+    @BindView(R.id.recycler_critic)
+    RecyclerView recyclerView;
+    @BindView(R.id.image_critic_in_activity)
+    ImageView imageView;
+
     private ReviewsRecycleViewAdapter reviewsRecycleView;
     private CriticContract.Presenter presenter;
     private Critic critic;
-    private SwipeRefreshLayout swipeRefreshLayout;
-    private RecyclerView recyclerView;
     private Paginate paginate;
     private boolean hasMoreReviews = true;
     private boolean loading = false;
-    private boolean isRefresh = false;
 
-    public static CriticFragment newInstance(Critic critic){
+    public static CriticFragment newInstance(Critic critic) {
         CriticFragment fragment = new CriticFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable(TAG, critic);
@@ -49,7 +64,7 @@ public class CriticFragment extends Fragment implements CriticContract.View, Swi
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null){
+        if (getArguments() != null) {
             critic = getArguments().getParcelable(TAG);
         }
     }
@@ -57,7 +72,8 @@ public class CriticFragment extends Fragment implements CriticContract.View, Swi
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_critic, null);
-        ImageView imageView = (ImageView) view.findViewById(R.id.image_critic_in_activity);
+        ButterKnife.bind(this, view);
+
         // вывод фотографии критика на экран, если есть ссылка на нее
         // иначе выводим картинку critic_default.png
         if (critic.getMultimedia() != null)
@@ -65,46 +81,29 @@ public class CriticFragment extends Fragment implements CriticContract.View, Swi
                     .load(critic.getMultimedia().getResource().getSrc())
                     .into(imageView);
         else imageView.setImageResource(R.drawable.critic_default);
+
         // вывод name критика
-        TextView nameCritic = (TextView)view.findViewById(R.id.text_display_name_critic);
         nameCritic.setText(critic.getDisplay_name());
+
         // вывод status критика
-        TextView status = (TextView)view.findViewById(R.id.text_status_critic);
         status.setText(critic.getStatus());
+
         // вывод bio критика, если оно существует,
         // иначе убираем с экрана textview, отображающее его
-        final TextView bio = (TextView)view.findViewById(R.id.text_bio_critic);
-        if (critic.getBio() != null){
+        if (critic.getBio() != null) {
             bio.setText(Html.fromHtml(critic.getBio()));
         } else
             bio.setVisibility(View.GONE);
-        CardView cardView = (CardView) view.findViewById(R.id.card_critic);
-        // нажатием на карточку, делаем видимой или невидимой bio критика
-        // для удобства просмотра списка его рецензий
-        cardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            if (bio.getVisibility() == View.GONE && !bio.getText().toString().isEmpty())
-                bio.setVisibility(View.VISIBLE);
-            else
-                bio.setVisibility(View.GONE);
-            }
-        });
-        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_critic);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        reviewsRecycleView = new ReviewsRecycleViewAdapter();
-        recyclerView.setAdapter(reviewsRecycleView);
-        presenter.setOffsetZero();
-        presenter.getReviews(critic.getDisplay_name());
-        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_critic);
-        swipeRefreshLayout.setRefreshing(true);
+
+        initRecycleView();
         return view;
     }
 
     @Override
-    public void setData(List<Review> reviews) {
+    public void setData(List<Review> reviews, boolean hasMoreReviews) {
+        loading = false;
+        this.hasMoreReviews = hasMoreReviews;
         reviewsRecycleView.setData(reviews);
-        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -112,12 +111,14 @@ public class CriticFragment extends Fragment implements CriticContract.View, Swi
         this.presenter = presenter;
     }
 
-    @Override
-    public void onRefresh() {
-        swipeRefreshLayout.setRefreshing(false);
+    private void initRecycleView() {
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        reviewsRecycleView = new ReviewsRecycleViewAdapter(new ArrayList<>());
+        recyclerView.setAdapter(reviewsRecycleView);
+        initPaginate();
     }
 
-    private void initPaginate(){
+    private void initPaginate() {
         if (paginate != null)
             return;
         paginate = Paginate.with(recyclerView, this)
@@ -130,8 +131,7 @@ public class CriticFragment extends Fragment implements CriticContract.View, Swi
     @Override
     public void onLoadMore() {
         loading = true;
-     //   if (!isRefresh)
-       //     presenter.loadReviews(reviewsAdapter.getItemCount(), editTextSearch.getText().toString(), "");
+        presenter.loadReviewsObservable(reviewsRecycleView.getItemCount(), critic.getDisplay_name());
     }
 
     @Override
@@ -144,6 +144,11 @@ public class CriticFragment extends Fragment implements CriticContract.View, Swi
         return !hasMoreReviews;
     }
 
-
-
+    @OnClick(R.id.card_critic)
+    void onClickCard() {
+        if (bio.getVisibility() == View.GONE && !bio.getText().toString().isEmpty())
+            bio.setVisibility(View.VISIBLE);
+        else
+            bio.setVisibility(View.GONE);
+    }
 }

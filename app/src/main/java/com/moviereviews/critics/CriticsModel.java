@@ -2,17 +2,31 @@ package com.moviereviews.critics;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.moviereviews.ApplicationMR;
+import com.moviereviews.NetworkClient;
 import com.moviereviews.R;
+import com.moviereviews.interfaces.NYTApi;
+import com.moviereviews.objectresponse.Critic;
 import com.moviereviews.objectresponse.Critics;
+import com.moviereviews.objectresponse.Review;
+import com.moviereviews.objectresponse.Reviews;
 
+import java.util.List;
+
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class CriticsModel implements CriticsContract.Model {
+    public static final String TAG = CriticsModel.class.getSimpleName();
 
     private Context context;
     private CriticsContract.Presenter presenter;
@@ -23,36 +37,17 @@ public class CriticsModel implements CriticsContract.Model {
     }
 
     @Override
-    public void getCritics(){
-        ApplicationMR.getApi().getCritics().enqueue(new Callback<Critics>() {
-            @Override
-            public void onResponse(@NonNull Call<Critics> call, @NonNull Response<Critics> response) {
-                if (response.body() != null){
-                    presenter.setCritics(response.body().getCritics());
-                }
-            }
+    public Observable<List<Critic>> getCriticsObservable(String name) {
+        return NetworkClient.getRetrofit()
+                .getCritics(name)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMap((Function<Critics, ObservableSource<List<Critic>>>) critics -> Observable.just(critics.getCritics()));
 
-            @Override
-            public void onFailure(@NonNull Call<Critics> call, @NonNull Throwable t) {
-                Toast.makeText(context, context.getResources().getText(R.string.error_message), Toast.LENGTH_LONG).show();
-            }
-        });
     }
-
-    @Override
-    public void getSearchByName(String name){
-        ApplicationMR.getApi().getSearchNameCritic(name).enqueue(new Callback<Critics>() {
-            @Override
-            public void onResponse(@NonNull Call<Critics> call, @NonNull  Response<Critics> response) {
-                if (response.body() != null){
-                    presenter.setCritics(response.body().getCritics());
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<Critics> call, @NonNull  Throwable t) {
-                Toast.makeText(context, context.getResources().getText(R.string.error_message), Toast.LENGTH_LONG).show();
-            }
-        });
-    }
+//        return ApplicationMR.getApi().getCritics(name)
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .flatMap((Function<Critics, ObservableSource<List<Critic>>>) critics -> Observable.just(critics.getCritics()));
+//    }
 }

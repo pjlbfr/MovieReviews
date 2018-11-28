@@ -7,17 +7,10 @@ import java.util.List;
 
 public interface CriticContract {
     interface View extends BaseView<CriticContract.Presenter> {
-        void setData(List<Review> reviews);
+        void setData(List<Review> reviews, boolean hasMoreReviews);
     }
 
     interface Presenter{
-        void setOffsetZero();
-        void getReviews(String name);
-        void setReviews(List<Review> reviews);
-    }
-
-    interface Model {
-        void setOffsetZero();
-        void getReviews(String name);
+        void loadReviewsObservable(int page, String name);
     }
 }
