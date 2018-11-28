@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.colorReviews)));
             getSupportActionBar().setElevation(0);
         }
+
         final TabsPagerFragmentAdapter pagerAdapter = new TabsPagerFragmentAdapter(getApplicationContext(), getSupportFragmentManager());
         viewPager.setAdapter(pagerAdapter);
         viewPager.addOnPageChangeListener(this);

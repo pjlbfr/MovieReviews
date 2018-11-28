@@ -15,6 +15,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 public class CriticsModel implements CriticsContract.Model {
+
     public static final String TAG = CriticsModel.class.getSimpleName();
 
     private Context context;
