@@ -16,10 +16,10 @@ public class CriticsPresenter implements CriticsContract.Presenter{
     private CriticsContract.View view;
     private CriticsContract.Model model;
 
-    public CriticsPresenter(Context context, @NonNull CriticsContract.View view){
+    public CriticsPresenter(@NonNull CriticsContract.View view){
         this.view = view;
         view.setPresenter(this);
-        this.model = new CriticsModel(context, this);
+        this.model = new CriticsModel(this);
     }
 
     @Override

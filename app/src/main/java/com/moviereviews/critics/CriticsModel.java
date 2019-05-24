@@ -1,7 +1,5 @@
 package com.moviereviews.critics;
 
-import android.content.Context;
-
 import com.moviereviews.NetworkClient;
 import com.moviereviews.objectresponse.Critic;
 import com.moviereviews.objectresponse.Critics;
@@ -18,11 +16,9 @@ public class CriticsModel implements CriticsContract.Model {
 
     public static final String TAG = CriticsModel.class.getSimpleName();
 
-    private Context context;
     private CriticsContract.Presenter presenter;
 
-    public CriticsModel(Context context, CriticsContract.Presenter presenter) {
-        this.context = context;
+    public CriticsModel(CriticsContract.Presenter presenter) {
         this.presenter = presenter;
     }
 

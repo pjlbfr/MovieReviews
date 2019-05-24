@@ -6,6 +6,8 @@ import android.util.Log;
 
 import com.moviereviews.repository.ReviewsRepository;
 
+import javax.inject.Inject;
+
 
 public class ReviewsPresenter implements ReviewsContract.Presenter {
 
@@ -14,6 +16,7 @@ public class ReviewsPresenter implements ReviewsContract.Presenter {
     private ReviewsContract.View view;
     private final ReviewsRepository reviewsRepository;
 
+    @Inject
     public ReviewsPresenter(@NonNull ReviewsContract.View view, @NonNull ReviewsRepository reviewsRepository) {
         this.view = view;
         view.setPresenter(this);

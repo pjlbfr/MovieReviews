@@ -1,11 +1,6 @@
 package com.moviereviews.repository;
 
-import android.support.annotation.NonNull;
-
-import com.moviereviews.objectresponse.Review;
 import com.moviereviews.objectresponse.ReviewsResult;
-
-import java.util.List;
 
 import io.reactivex.Observable;
 

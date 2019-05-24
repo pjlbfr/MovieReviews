@@ -3,18 +3,19 @@ package com.moviereviews.critic;
 import android.app.ActionBar;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatTextView;
 
 import com.moviereviews.R;
 import com.moviereviews.objectresponse.Critic;
-import com.moviereviews.repository.ReviewsRepository;
-import com.moviereviews.repository.local.ReviewsLocalDataSource;
-import com.moviereviews.repository.remote.ReviewsRemoteDataSource;
 
-public class CriticActivity extends AppCompatActivity{
+import dagger.android.support.DaggerAppCompatActivity;
+
+public class CriticActivity extends DaggerAppCompatActivity{
 
     public static final String TAG = CriticActivity.class.getSimpleName();
+
+//    @Inject
+//    ReviewsRepository reviewsRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,9 +40,7 @@ public class CriticActivity extends AppCompatActivity{
         getSupportFragmentManager().beginTransaction()
                                    .replace(R.id.frame_layout, criticFragment)
                                    .commit();
-        new CriticPresenter(criticFragment,
-                            ReviewsRepository.getInstance(ReviewsRemoteDataSource.getInstance(),
-                                                          ReviewsLocalDataSource.getInstance(getApplicationContext()))
-        );
+//        new CriticPresenter(criticFragment,
+//                            reviewsRepository);
     }
 }

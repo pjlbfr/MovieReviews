@@ -6,7 +6,10 @@ import android.net.NetworkInfo;
 
 public class Utils {
 
-    public static boolean checkInternetAccess(Context context) {
+    public boolean checkThis(){return true;}
+
+
+    public boolean checkInternetAccess(Context context) {
         ConnectivityManager cm =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();

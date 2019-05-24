@@ -1,43 +1,33 @@
 package com.moviereviews.repository;
 
-import android.content.Context;
-import android.support.annotation.NonNull;
-
-import com.moviereviews.objectresponse.Review;
 import com.moviereviews.objectresponse.ReviewsResult;
+import com.moviereviews.repository.local.ReviewsLocal;
+import com.moviereviews.repository.remote.ReviewsRemote;
 
-import java.util.List;
+import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
 public class ReviewsRepository implements ReviewsDataSource {
 
-    private static ReviewsRepository INSTANCE = null;
+    private final ReviewsRemote remote;
+    private final ReviewsLocal local;
 
-    private final ReviewsDataSource reviewsRemoteDataSource;
-    private final ReviewsDataSource reviewsLocalDataSource;
-
-    private ReviewsRepository(@NonNull ReviewsDataSource reviewsRemoteDataSource,
-                              @NonNull ReviewsDataSource reviewsLocalDataSource) {
-        this.reviewsRemoteDataSource = reviewsRemoteDataSource;
-        this.reviewsLocalDataSource = reviewsLocalDataSource;
-    }
-
-    public static ReviewsRepository getInstance(ReviewsDataSource reviewsRemoteDataSource,
-                                                ReviewsDataSource reviewsLocalDataSource) {
-        if (INSTANCE == null)
-            INSTANCE = new ReviewsRepository(reviewsRemoteDataSource, reviewsLocalDataSource);
-        return INSTANCE;
+    @Inject
+    public ReviewsRepository(ReviewsRemote remote,
+                             ReviewsLocal local) {
+        this.remote = remote;
+        this.local = local;
     }
 
     @Override
     public void close() {
-        reviewsLocalDataSource.close();
+        local.close();
     }
-
 
     @Override
     public void deleteAllReviews() {
@@ -51,7 +41,7 @@ public class ReviewsRepository implements ReviewsDataSource {
 
     @Override
     public Observable<ReviewsResult> loadCriticReviewsObservable(int page, String name) {
-        return reviewsRemoteDataSource.loadCriticReviewsObservable(page, name);
+        return remote.loadCriticReviewsObservable(page, name);
     }
 
     @Override
@@ -61,24 +51,33 @@ public class ReviewsRepository implements ReviewsDataSource {
 
     @Override
     public Observable<ReviewsResult> refreshReviewsObservable(String title, String date) {
-        return reviewsRemoteDataSource.loadReviewsObservable(0, title, date)
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .flatMap((Function<ReviewsResult, ObservableSource<ReviewsResult>>) reviewsResult -> {
-                    reviewsLocalDataSource.deleteAllReviews();
-                    return reviewsLocalDataSource.saveReviews(reviewsResult);
-                });
+        local.deleteAllReviews();
+        return remote.loadReviewsObservable(0, title, date)
+                .subscribeOn(AndroidSchedulers.mainThread());
     }
 
     @Override
     public Observable<ReviewsResult> loadReviewsObservable(int page, String title, String date) {
-        if (reviewsLocalDataSource.hasReviews() && page == 0) {
-            return reviewsLocalDataSource.loadReviewsObservable(page, title, date);
-        } else {
-            return reviewsRemoteDataSource.loadReviewsObservable(page, title, date)
-                    .subscribeOn(AndroidSchedulers.mainThread())
-                    .flatMap((Function<ReviewsResult, ObservableSource<ReviewsResult>>)
-                            reviewsLocalDataSource::saveReviews
-                    );
-        }
+        return local.loadReviewsObservable(page, title, date)
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .flatMap((Function<ReviewsResult, Observable<ReviewsResult>>) reviewsResult -> {
+                    if (reviewsResult != null && page == 0)
+                        return Observable.just(reviewsResult);
+                    else
+                        return remote
+                                .loadReviewsObservable(page, title, date)
+                                .subscribeOn(Schedulers.io());
+                });
+
+
+//        if (reviewsLocalDataSource.hasReviews() && page == 0) {
+//            return reviewsLocalDataSource.loadReviewsObservable(page, title, date);
+//        } else {
+//            return reviewsRemoteDataSource.loadReviewsObservable(page, title, date)
+//                    .subscribeOn(AndroidSchedulers.mainThread())
+//                    .flatMap((Function<ReviewsResult, ObservableSource<ReviewsResult>>)
+//                            reviewsLocalDataSource::saveReviews
+//                    );
+//        }
     }
 }

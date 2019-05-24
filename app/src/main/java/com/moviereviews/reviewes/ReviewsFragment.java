@@ -1,6 +1,9 @@
 package com.moviereviews.reviewes;
 
 import android.app.DatePickerDialog;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,7 +20,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.moviereviews.R;
+import com.moviereviews.Utils;
+import com.moviereviews.interfaces.NYTApi;
+import com.moviereviews.objectresponse.Critics;
 import com.moviereviews.objectresponse.Review;
+import com.moviereviews.objectresponse.ReviewsResult;
 import com.paginate.Paginate;
 
 import java.text.ParseException;
@@ -26,14 +33,17 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
+import dagger.android.support.DaggerFragment;
 
 import static butterknife.OnTextChanged.Callback.AFTER_TEXT_CHANGED;
 
-public class ReviewsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, ReviewsContract.View, Paginate.Callbacks {
+public class ReviewsFragment extends DaggerFragment implements SwipeRefreshLayout.OnRefreshListener, Paginate.Callbacks {
 
     public static final String TAG = ReviewsFragment.class.getSimpleName();
     private final Calendar cal = Calendar.getInstance();
@@ -47,12 +57,16 @@ public class ReviewsFragment extends Fragment implements SwipeRefreshLayout.OnRe
     @BindView(R.id.swipe_refresh_reviews)
     SwipeRefreshLayout swipeRefreshLayout;
 
-    private ReviewsContract.Presenter presenter;
     private ReviewsRecycleViewAdapter reviewsAdapter;
     private boolean isRefresh = false;
     private Paginate paginate;
     private boolean hasMoreReviews = true;
     private boolean loading = false;
+    private ReviewsViewModel viewModel;
+
+    @Inject
+    ViewModelProvider.Factory viewModelFactory;
+
 
     public static ReviewsFragment newInstance() {
         return new ReviewsFragment();
@@ -61,6 +75,7 @@ public class ReviewsFragment extends Fragment implements SwipeRefreshLayout.OnRe
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -71,20 +86,36 @@ public class ReviewsFragment extends Fragment implements SwipeRefreshLayout.OnRe
         swipeRefreshLayout.setOnRefreshListener(this);
 
         textViewDate.setText(getString(R.string.dateFormat, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH)));
-
         isRefresh = true;
-        presenter.loadReviewsObservable(0, "", "");
+
+        setupViewModel();
 
         return view;
     }
 
-    @Override
-    public void setPresenter(ReviewsContract.Presenter presenter) {
-        this.presenter = presenter;
+    private void setupViewModel(){
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(ReviewsViewModel.class);
+        viewModel.loadReviews(0, editTextSearch.getText().toString(), "");
+        viewModel.result().observe(this, observerResult());
     }
 
+    private Observer<List<Review>> observerReviews(){
+        return reviews -> {
 
-    @Override
+        };
+    }
+
+    private Observer<Boolean> observerHasMore(){
+        return hasMore -> {};
+    }
+
+    private Observer<ReviewsResult> observerResult(){
+        return result -> {
+            this.hasMoreReviews = result.isHas_more();
+        //    reviewsAdapter.setData(result.getReviews());
+        };
+    }
+
     public void setData(List<Review> reviews, boolean hasMoreReviews) {
         if (isRefresh) {
             initRecycleView(reviews);
@@ -105,10 +136,9 @@ public class ReviewsFragment extends Fragment implements SwipeRefreshLayout.OnRe
 
     private void refresh(String title) {
         isRefresh = true;
-        presenter.refreshReviewsObservable(title, "");
+        viewModel.refreshReviews(title, "");
     }
 
-    @Override
     public void showMessageIsEmpty() {
         Toast.makeText(getContext(), getResources().getString(R.string.nothing_found), Toast.LENGTH_SHORT).show();
     }
@@ -134,8 +164,8 @@ public class ReviewsFragment extends Fragment implements SwipeRefreshLayout.OnRe
     @Override
     public void onLoadMore() {
         loading = true;
-        if (!isRefresh)
-            presenter.loadReviewsObservable(reviewsAdapter.getItemCount(), editTextSearch.getText().toString(), "");
+        if (!isRefresh);
+            viewModel.loadReviews(reviewsAdapter.getItemCount(), editTextSearch.getText().toString(), "");
     }
 
     @Override

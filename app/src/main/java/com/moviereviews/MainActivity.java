@@ -1,6 +1,7 @@
 package com.moviereviews;
 
 import android.app.ActionBar;
+import android.database.Observable;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -12,11 +13,18 @@ import android.support.v7.widget.AppCompatTextView;
 import android.view.View;
 import android.widget.TextView;
 
+import com.moviereviews.interfaces.NYTApi;
+import com.moviereviews.objectresponse.Critics;
+import com.moviereviews.realm.RealmRequests;
+
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import dagger.android.support.DaggerAppCompatActivity;
 
-public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener {
+public class MainActivity extends DaggerAppCompatActivity implements ViewPager.OnPageChangeListener {
 
     @BindView(R.id.text_tab_reviews_new)
     TextView tvReviews;
@@ -37,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             getSupportActionBar().setElevation(0);
         }
 
-        final TabsPagerFragmentAdapter pagerAdapter = new TabsPagerFragmentAdapter(getApplicationContext(), getSupportFragmentManager());
+        final TabsPagerFragmentAdapter pagerAdapter = new TabsPagerFragmentAdapter(getSupportFragmentManager());
         viewPager.setAdapter(pagerAdapter);
         viewPager.addOnPageChangeListener(this);
     }

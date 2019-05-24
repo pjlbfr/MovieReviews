@@ -1,41 +1,35 @@
 package com.moviereviews;
 
-import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import com.moviereviews.critics.CriticsFragment;
 import com.moviereviews.critics.CriticsPresenter;
-import com.moviereviews.repository.ReviewsRepository;
-import com.moviereviews.repository.local.ReviewsLocalDataSource;
-import com.moviereviews.repository.remote.ReviewsRemoteDataSource;
 import com.moviereviews.reviewes.ReviewsFragment;
-import com.moviereviews.reviewes.ReviewsPresenter;
 
 public class TabsPagerFragmentAdapter extends FragmentPagerAdapter {
 
-    private Context context;
+//    @Inject
+//    ReviewsPresenter reviewsPresenter;
+//    @Inject
+//    ReviewsRepository reviewsRepository;
 
-    public TabsPagerFragmentAdapter(Context context,FragmentManager fm) {
+    public TabsPagerFragmentAdapter(FragmentManager fm) {
         super(fm);
-        this.context = context;
     }
 
     @Override
     public Fragment getItem(int position) {
-        switch (position){
+        switch (position) {
             // вкладка рецензии
             case 0:
-                ReviewsFragment fragmentReviews = ReviewsFragment.newInstance();
-                new ReviewsPresenter(fragmentReviews,
-                                     ReviewsRepository.getInstance(ReviewsRemoteDataSource.getInstance(),
-                                                                   ReviewsLocalDataSource.getInstance(context)));
-                return fragmentReviews;
-             // вкладка критики
+                return ReviewsFragment.newInstance();
+
+            // вкладка критики
             case 1:
                 CriticsFragment fragmentCritics = CriticsFragment.newInstance();
-                new CriticsPresenter(context, fragmentCritics);
+                new CriticsPresenter(fragmentCritics);
                 return fragmentCritics;
         }
         return null;

@@ -21,6 +21,8 @@ import com.moviereviews.objectresponse.Critic;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnTextChanged;
@@ -37,6 +39,7 @@ public class CriticsFragment extends Fragment implements SwipeRefreshLayout.OnRe
     RecyclerView recyclerView;
 
     private CriticsContract.Presenter presenter;
+
 
     public static CriticsFragment newInstance() {
         return new CriticsFragment();
