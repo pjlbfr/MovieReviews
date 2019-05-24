@@ -32,7 +32,7 @@ publish {
     repoName = 'MovieReviews'
     publishVersion = '0.1.0'
     desc = 'Test library for great job.'
-    website = 'https://github.com/pjlbfr/MovieReviews.git'
+    website = 'https://github.com/pjlbfr/MovieReviews'
 }
 
 dependencies {
