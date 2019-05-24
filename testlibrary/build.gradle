@@ -29,11 +29,9 @@ publish {
     groupId = 'com.github.pjlbfr'
     artifactId = 'testlibrary'
     userOrg = 'pjlbfr'
-    repoName = 'MovieTestLibrary'
+    repoName = 'MovieReviews'
     publishVersion = '0.1.0'
     desc = 'Test library for great job.'
-    licences = ['Apache-2.0']
-    uploadName='GoodNightAndGoodDay'
     website = 'https://github.com/pjlbfr/MovieReviews'
 }
 
