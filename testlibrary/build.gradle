@@ -29,7 +29,7 @@ publish {
     groupId = 'com.github.pjlbfr'
     artifactId = 'testlibrary'
     userOrg = 'pjlbfr'
-    repoName = 'MovieReviews'
+    repoName = 'testlibrary'
     publishVersion = '0.1.0'
     desc = 'Test library for great job.'
     website = 'https://github.com/pjlbfr/MovieReviews'
